@@ -8,12 +8,22 @@ var app = require('../app');
 var debug = require('debug')('www-booking:server');
 var http = require('http');
 
+var https = require('https');
+
+var options = {
+    key : fs.readFileSync('/home/ec2-user/aliCertificate/214243098680862.key'),
+    cert : fs.readFileSync('/home/ec2-user/aliCertificate/214243098680862.pem')
+};
+
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '8081');
+var porthttps = normalizePort(process.env.PORTHTTPS || '8082');
+
 app.set('port', port);
+app.set('porthttps', porthttps);
 
 /**
  * make a log directory, just in case it isn't there.
@@ -21,7 +31,7 @@ app.set('port', port);
 try {
     require('fs').mkdirSync('./log');
 } catch (e) {
-    if (e.code != 'EEXIST') {
+    if (e.code != 'EXIST') {
         console.error("Could not set up log directory, error was: ", e);
         process.exit(1);
     }
@@ -36,19 +46,26 @@ var log = require('log4js').getLogger("startup");
 //log.level ="debug";
 log.debug("startup");
 
+
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer(app).listen(app.get('port'),function(){
+
+    console.log('http Server listening on port ' + app.get('port'));
+});
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+//server.listen(port);
+//server.on('error', onError);
+//server.on('listening', onListening);
+https.createServer(options, app).listen(app.get('porthttps'), function() {
+    console.log('https Server listening on port ' + app.get('porthttps'));
+});
 
 /**
  * Normalize a port into a number, string, or false.
