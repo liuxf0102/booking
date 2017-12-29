@@ -6,6 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('www-booking:server');
+var fs = require('fs');
 var http = require('http');
 
 var https = require('https');
