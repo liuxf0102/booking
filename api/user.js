@@ -1,20 +1,93 @@
 var express = require('express');
 var router = express.Router();
-var query = require("../lib/mysql_pool");
+var pool = require("../lib/mysql_pool");
 
-var log = require('log4js').getLogger("booking");
+var log = require('log4js').getLogger("user");
 log.level = "debug";
 
+// getUserid by openid
+router.post('/getUserid', function (req, res, next) {
+    var response = [];
+    var openid = req.body.openid;
+    var nick_name = req.body.nick_name;
+    //var openid = req.params.openid;
+
+    log.debug("openid:" + openid);
+
+    res.setHeader('Content-Type', 'application/json');
+
+    pool.conn(function (conn) {
+
+        var selectSQL = "select userid from bk_user where openid = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [openid], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].userid);
+                    //set userid
+                    response.push({
+                        'result': 'success',
+                        'data': result
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error openid:" + openid);
+                    response.push({
+                        'msg': 'get userid error: ' + openid + ",result length:" + result.length
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    var insertSQL = "insert into bk_user (openid,nick_name) values(?,?)";
+                    log.debug(insertSQL);
+                    conn.query(insertSQL, [openid,nick_name], function (err, result) {
+
+                        if (!err) {
+
+                            if (result.affectedRows !== 0) {
+                                response.push({
+                                    'result': 'success'
+                                });
+                                response.push({
+                                    'userid': result.insertId
+                                });
+                            } else {
+                                response.push({
+                                    'msg': 'create userid error.'
+                                });
+                            }
+                            res.status(200).send(JSON.stringify(response));
+
+                        } else {
+                            res.status(400).send(err);
+                        }
+
+                    })
 
 
-var listSQL = "select *  from bk_dates where  id =? ";
-var condSQL = "";
-var orderSQL = " order by yearmd ";
+                }
 
-router.get('/list/:user_id1/', function (req, res, next) {
-    var user_id1 = req.params.user_id1;
+
+            } else {
+                res.status(400).send(err);
+            }
+
+        });
+
+
+    });
+
+
+});
+
+router.get('/:userid', function (req, res, next) {
+    var userid = req.params.userid;
 
     var response = [];
+
+    var sql = "select *  from bk_user where  userid =? ";
+    var condSQL = "";
+    var orderSQL = "  ";
 
     var user_id2 = req.body.user_id2;
     var yearmd = req.body.yearmd;
@@ -25,32 +98,89 @@ router.get('/list/:user_id1/', function (req, res, next) {
         condSQL = condSQL + " and (yearmd = '" + yearmd + "') ";
     }
 
-    log.debug("querySql 3:" + listSQL + condSQL + orderSQL);
+    log.debug("sql:" + sql);
 
-    query(listSQL + condSQL + orderSQL, [user_id1], function (err, rows, fields) {
+    pool.conn(function (conn) {
+        conn.query(sql, [userid], function (err, result) {
+            if (!err) {
+                var response = [];
 
+                if (result.length !== 0) {
+                    response.push({
+                        'result': 'success',
+                        'data': result
+                    });
+                } else {
+                    response.push({
+                        'result': 'error',
+                        'msg': 'No Results Found'
+                    });
+                }
 
-        if (!err) {
-            var response = [];
-
-            if (rows.length !== 0) {
-                response.push({
-                    'result': 'success',
-                    'data': rows
-                });
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
             } else {
-                response.push({
-                    'result': 'error',
-                    'msg': 'No Results Found'
-                });
+                res.status(400).send(err);
             }
 
-            res.setHeader('Content-Type', 'application/json');
-            res.status(200).send(JSON.stringify(response));
-        } else {
-            res.status(400).send(err);
-        }
+        })
     });
+
+
+});
+
+//modify user info
+router.put('/:userid', function (req, res, next) {
+    var userid = req.params.userid;
+
+    var response = [];
+
+
+    var otherFields = " ";
+
+    var nick_name = req.body.nick_name;
+    if (typeof nick_name !== 'undefined' && nick_name !== '') {
+        otherFields = otherFields + ",nick_name = '" + nick_name + "') ";
+    }
+
+    var real_name = req.body.real_name;
+    if (typeof real_name !== 'undefined' && real_name !== '') {
+        otherFields = otherFields + ",real_name = '" + real_name + "') ";
+    }
+
+
+    var sql = "update bk_user set userid=? " + otherFields + " where  userid =? ";
+
+
+    log.debug("sql:" + sql);
+
+    pool.conn(function (conn) {
+        conn.query(sql, [userid], function (err, result) {
+            if (!err) {
+                var response = [];
+
+                if (result.affectedRows !== 0) {
+                    response.push({
+                        'result': 'success'
+                    });
+                    response.push({
+                        'userid': result.insertId
+                    });
+                } else {
+                    response.push({
+                        'msg': 'update user error:'+userid
+                    });
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
+            } else {
+                res.status(400).send(err);
+            }
+
+        })
+    });
+
 
 });
 
