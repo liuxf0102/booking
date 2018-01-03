@@ -1,56 +1,93 @@
 var express = require('express');
 var router = express.Router();
-var query = require("../lib/mysql_pool");
+var pool = require("../lib/mysql_pool");
 
 var log = require('log4js').getLogger("booking");
 log.level = "debug";
 
-
-
-var listSQL = "select *  from bk_dates where  id =? ";
-var condSQL = "";
-var orderSQL = " order by yearmd ";
-
-router.get('/list/:user_id1/', function (req, res, next) {
-    var user_id1 = req.params.user_id1;
+router.post('/query', function (req, res, next) {
+    var userid = req.body.userid;
 
     var response = [];
 
-    var user_id2 = req.body.user_id2;
-    var yearmd = req.body.yearmd;
-    var hourms = req.body.hourms, is_first = req.body.is_first;
-    var job_desc = req.body.job_desc, remark = req.body.remark;
+    var sql = "select *  from bk_booking where  userid1 =? ";
 
-    if (typeof yearmd !== 'undefined' && yearmd !== '') {
-        condSQL = condSQL + " and (yearmd = '" + yearmd + "') ";
-    }
+    log.debug("sql:" + sql);
+    log.debug("param:" + userid);
 
-    log.debug("querySql 3:" + listSQL + condSQL + orderSQL);
+    pool.conn(function (conn) {
+        conn.query(sql, [userid], function (err, result) {
+            if (!err) {
+                var response = [];
 
-    query(listSQL + condSQL + orderSQL, [user_id1], function (err, rows, fields) {
+                if (result.length !== 0) {
+                    response.push({
+                        'result': 'success',
+                        'data': result
+                    });
+                } else {
+                    response.push({
+                        'result': 'error',
+                        'msg': 'No Results Found'
+                    });
+                }
 
-
-        if (!err) {
-            var response = [];
-
-            if (rows.length !== 0) {
-                response.push({
-                    'result': 'success',
-                    'data': rows
-                });
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
             } else {
-                response.push({
-                    'result': 'error',
-                    'msg': 'No Results Found'
-                });
+                res.status(400).send(err);
             }
 
-            res.setHeader('Content-Type', 'application/json');
-            res.status(200).send(JSON.stringify(response));
-        } else {
-            res.status(400).send(err);
-        }
+        })
     });
+
+
+});
+
+//modify user info
+router.post('/create', function (req, res, next) {
+    log.debug("req.body"+JSON.stringify(req.body));
+    var userid1 = req.body.userid1;
+    var userid2 = req.body.userid2;
+    var year = req.body.year;
+    var month = req.body.month;
+    var day = req.body.day;
+    var weekday = req.body.weekday;
+    var response = [];
+
+    var sqlPrepare = ["insert into bk_booking (userid1,userid2,year,month,day,weekday,hour,minute) values ()"];
+    var paramValue = [userid1, userid2];
+
+    var sql = sqlPrepare.join(" ");
+
+    log.debug("sql:" + sql);
+    log.debug("param:" + paramValue);
+
+    pool.conn(function (conn) {
+        conn.query(sql, paramValue, function (err, result) {
+            if (!err) {
+                var response = [];
+
+                if (result.affectedRows !== 0) {
+                    response.push({
+                        'result': 'success',
+                        'id': result.insertId
+                    });
+                } else {
+                    response.push({
+                        'msg': 'update user error userid:' + userid
+                    });
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
+            } else {
+                res.status(400).send(err);
+            }
+
+        })
+    });
+
 
 });
 

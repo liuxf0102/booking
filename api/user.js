@@ -6,19 +6,20 @@ var log = require('log4js').getLogger("user");
 log.level = "debug";
 
 // getUserid by openid
-router.post('/getUserid', function (req, res, next) {
+router.post('/getUserInfoByOpenid', function (req, res, next) {
     var response = [];
     var openid = req.body.openid;
     var nick_name = req.body.nick_name;
     //var openid = req.params.openid;
 
     log.debug("openid:" + openid);
+    log.debug("nick_name:" + nick_name);
 
     res.setHeader('Content-Type', 'application/json');
 
     pool.conn(function (conn) {
 
-        var selectSQL = "select userid from bk_user where openid = ?";
+        var selectSQL = "select * from bk_user where openid = ?";
         log.debug(selectSQL);
         conn.query(selectSQL, [openid], function (err, result) {
 
@@ -28,7 +29,7 @@ router.post('/getUserid', function (req, res, next) {
                     //set userid
                     response.push({
                         'result': 'success',
-                        'data': result
+                        'myInfo': result[0]
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else if (result.length > 1) {
@@ -40,23 +41,33 @@ router.post('/getUserid', function (req, res, next) {
                 } else {
                     var insertSQL = "insert into bk_user (openid,nick_name) values(?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [openid,nick_name], function (err, result) {
+                    conn.query(insertSQL, [openid, nick_name], function (err, result) {
 
                         if (!err) {
 
                             if (result.affectedRows !== 0) {
-                                response.push({
-                                    'result': 'success'
+                                conn.query(selectSQL, [openid], function (err, result) {
+
+                                    if (!err) {
+                                        if (result.length === 1) {
+                                            log.debug("result:" + result[0].userid);
+                                            //set userid
+                                            response.push({
+                                                'result': 'success',
+                                                'myInfo': result[0]
+                                            });
+                                            res.status(200).send(JSON.stringify(response));
+                                        }
+                                    }
                                 });
-                                response.push({
-                                    'userid': result.insertId
-                                });
+
                             } else {
                                 response.push({
                                     'msg': 'create userid error.'
                                 });
+                                res.status(200).send(JSON.stringify(response));
                             }
-                            res.status(200).send(JSON.stringify(response));
+
 
                         } else {
                             res.status(400).send(err);
@@ -80,23 +91,95 @@ router.post('/getUserid', function (req, res, next) {
 
 });
 
+// getUserid by mobile
+router.post('/getUserInfoByMobile', function (req, res, next) {
+    var response = [];
+    var mobile = req.body.mobile;
+    log.debug("mobile:" + mobile);
+    res.setHeader('Content-Type', 'application/json');
+    pool.conn(function (conn) {
+
+        var selectSQL = "select * from bk_user where mobile = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [mobile], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].userid);
+                    //set userid
+                    response.push({
+                        'result': 'success',
+                        'myInfo': result[0]
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error mobile:" + mobile);
+                    response.push({
+                        'msg': 'get userid error: ' + mobile + ",result length:" + result.length
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    var insertSQL = "insert into bk_user (mobile) values(?)";
+                    log.debug(insertSQL);
+                    conn.query(insertSQL, [mobile], function (err, result) {
+
+                        if (!err) {
+
+                            if (result.affectedRows !== 0) {
+                                conn.query(selectSQL, [mobile], function (err, result) {
+
+                                    if (!err) {
+                                        if (result.length === 1) {
+                                            log.debug("result:" + result[0].userid);
+                                            //set userid
+                                            response.push({
+                                                'result': 'success',
+                                                'myInfo': result[0]
+                                            });
+                                            res.status(200).send(JSON.stringify(response));
+                                        }
+                                    }
+                                });
+
+                            } else {
+                                response.push({
+                                    'msg': 'create userid error.'
+                                });
+                                res.status(200).send(JSON.stringify(response));
+                            }
+
+
+                        } else {
+                            res.status(400).send(err);
+                        }
+
+                    })
+
+
+                }
+
+
+            } else {
+                res.status(400).send(err);
+            }
+
+        });
+
+
+    });
+
+
+});
+
+
+
+
 router.get('/:userid', function (req, res, next) {
     var userid = req.params.userid;
 
     var response = [];
 
     var sql = "select *  from bk_user where  userid =? ";
-    var condSQL = "";
-    var orderSQL = "  ";
-
-    var user_id2 = req.body.user_id2;
-    var yearmd = req.body.yearmd;
-    var hourms = req.body.hourms, is_first = req.body.is_first;
-    var job_desc = req.body.job_desc, remark = req.body.remark;
-
-    if (typeof yearmd !== 'undefined' && yearmd !== '') {
-        condSQL = condSQL + " and (yearmd = '" + yearmd + "') ";
-    }
 
     log.debug("sql:" + sql);
 
@@ -130,45 +213,54 @@ router.get('/:userid', function (req, res, next) {
 });
 
 //modify user info
-router.put('/:userid', function (req, res, next) {
-    var userid = req.params.userid;
+router.put('/', function (req, res, next) {
+    var userid = req.body.userid;
 
     var response = [];
 
+    var sqlPrepare = ["update bk_user set userid = ? "];
+    var paramValue = [userid];
 
-    var otherFields = " ";
 
     var nick_name = req.body.nick_name;
     if (typeof nick_name !== 'undefined' && nick_name !== '') {
-        otherFields = otherFields + ",nick_name = '" + nick_name + "') ";
+        sqlPrepare.push(",nick_name = ?");
+        paramValue.push(nick_name);
     }
 
     var real_name = req.body.real_name;
     if (typeof real_name !== 'undefined' && real_name !== '') {
-        otherFields = otherFields + ",real_name = '" + real_name + "') ";
+        sqlPrepare.push(",real_name = ?");
+        paramValue.push(real_name);
+    }
+    var mobile = req.body.mobile;
+    if (typeof mobile !== 'undefined' && mobile !== '') {
+        sqlPrepare.push(",mobile = ?");
+        paramValue.push(mobile);
     }
 
 
-    var sql = "update bk_user set userid=? " + otherFields + " where  userid =? ";
+    sqlPrepare.push("where userid=?");
+    paramValue.push(userid);
 
+    var sql = sqlPrepare.join(" ");
 
     log.debug("sql:" + sql);
+    log.debug("param:" + paramValue);
 
     pool.conn(function (conn) {
-        conn.query(sql, [userid], function (err, result) {
+        conn.query(sql, paramValue, function (err, result) {
             if (!err) {
                 var response = [];
 
                 if (result.affectedRows !== 0) {
                     response.push({
-                        'result': 'success'
-                    });
-                    response.push({
-                        'userid': result.insertId
+                        'result': 'success',
+                        'userid': userid
                     });
                 } else {
                     response.push({
-                        'msg': 'update user error:'+userid
+                        'msg': 'update user error userid:' + userid
                     });
                 }
 
