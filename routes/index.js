@@ -12,4 +12,7 @@ router.use("/user",user);
 var booking = require('../api/booking');
 router.use("/booking",booking);
 
+var weixin = require('../api/weixin');
+router.use("/weixin",weixin);
+
 module.exports = router;

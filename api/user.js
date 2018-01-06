@@ -6,26 +6,28 @@ var log = require('log4js').getLogger("user");
 log.level = "debug";
 
 // getUserid by openid
-router.post('/getUserInfoByOpenid', function (req, res, next) {
+router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
     var response = [];
     var openid = req.body.openid;
+    var unionid = req.body.unionid;
     var nick_name = req.body.nick_name;
     //var openid = req.params.openid;
 
     log.debug("openid:" + openid);
+    log.debug("unionid:" + unionid);
     log.debug("nick_name:" + nick_name);
 
     res.setHeader('Content-Type', 'application/json');
 
     pool.conn(function (conn) {
 
-        var selectSQL = "select * from bk_user where openid = ?";
+        var selectSQL = "select * from bk_user where unionid = ?";
         log.debug(selectSQL);
-        conn.query(selectSQL, [openid], function (err, result) {
+        conn.query(selectSQL, [unionid], function (err, result) {
 
             if (!err) {
                 if (result.length === 1) {
-                    log.debug("result:" + result[0].userid);
+                    log.debug("result:" + result[0].unionid);
                     //set userid
                     response.push({
                         'result': 'success',
@@ -39,14 +41,14 @@ router.post('/getUserInfoByOpenid', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (openid,nick_name) values(?,?)";
+                    var insertSQL = "insert into bk_user (unionid,openid,nick_name) values(?,?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [openid, nick_name], function (err, result) {
+                    conn.query(insertSQL, [unionid,openid, nick_name], function (err, result) {
 
                         if (!err) {
 
                             if (result.affectedRows !== 0) {
-                                conn.query(selectSQL, [openid], function (err, result) {
+                                conn.query(selectSQL, [unionid], function (err, result) {
 
                                     if (!err) {
                                         if (result.length === 1) {
@@ -93,6 +95,53 @@ router.post('/getUserInfoByOpenid', function (req, res, next) {
 
 // getUserid by mobile
 router.post('/getUserInfoByMobile', function (req, res, next) {
+    var response = [];
+    var mobile = req.body.mobile;
+    log.debug("mobile:" + mobile);
+    res.setHeader('Content-Type', 'application/json');
+    pool.conn(function (conn) {
+
+        var selectSQL = "select * from bk_user where mobile = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [mobile], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].userid);
+                    //set userid
+                    response.push({
+                        'result': 'success',
+                        'myInfo': result[0]
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error mobile:" + mobile +"result.length"+ result.length);
+                    response.push({
+                        'result': 'error'
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    response.push({
+                        'result': 'error',
+                        'myInfo': '{}'
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                }
+
+
+            } else {
+                res.status(400).send(err);
+            }
+
+        });
+
+
+    });
+
+
+});
+
+router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
     var response = [];
     var mobile = req.body.mobile;
     log.debug("mobile:" + mobile);
@@ -170,7 +219,6 @@ router.post('/getUserInfoByMobile', function (req, res, next) {
 
 
 });
-
 
 
 

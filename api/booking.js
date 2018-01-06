@@ -5,15 +5,22 @@ var pool = require("../lib/mysql_pool");
 var log = require('log4js').getLogger("booking");
 log.level = "debug";
 
-router.post('/query', function (req, res, next) {
+router.post('/list', function (req, res, next) {
     var userid = req.body.userid;
 
     var response = [];
 
-    var sql = "select *  from bk_booking where  userid1 =? ";
+    var sqlPrepare = ["select b.*,u.real_name,u.nick_name  from bk_booking b,bk_user u where b.userid2=u.userid and userid1 =? "];
+    var paramValue=[userid];
+    var month = req.body.month;
+    if (typeof month !== 'undefined' && month !== '') {
+        sqlPrepare.push("and month = ?");
+        paramValue.push(month);
+    }
 
+    var sql = sqlPrepare.join(" ");
     log.debug("sql:" + sql);
-    log.debug("param:" + userid);
+    log.debug("param :" + paramValue.join(" "));
 
     pool.conn(function (conn) {
         conn.query(sql, [userid], function (err, result) {
@@ -44,19 +51,23 @@ router.post('/query', function (req, res, next) {
 
 });
 
+
 //modify user info
 router.post('/create', function (req, res, next) {
-    log.debug("req.body"+JSON.stringify(req.body));
+    log.debug("req.body" + JSON.stringify(req.body));
     var userid1 = req.body.userid1;
     var userid2 = req.body.userid2;
     var year = req.body.year;
     var month = req.body.month;
     var day = req.body.day;
     var weekday = req.body.weekday;
+    var hour = req.body.hour;
+    var minute = req.body.minute;
+
     var response = [];
 
-    var sqlPrepare = ["insert into bk_booking (userid1,userid2,year,month,day,weekday,hour,minute) values ()"];
-    var paramValue = [userid1, userid2];
+    var sqlPrepare = ["insert into bk_booking (userid1,userid2,year,month,day,weekday,hour,minute) values (?,?,?,?,?,?,?,?)"];
+    var paramValue = [userid1, userid2, year, month, day, weekday, hour, minute];
 
     var sql = sqlPrepare.join(" ");
 
