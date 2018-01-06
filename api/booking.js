@@ -10,7 +10,7 @@ router.post('/list', function (req, res, next) {
 
     var response = [];
 
-    var sqlPrepare = ["select b.*,u.real_name,u.nick_name  from bk_booking b,bk_user u where b.userid2=u.userid and userid1 =? "];
+    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile  from bk_booking b,bk_user u where b.userid2=u.userid and userid1 =? "];
     var paramValue=[userid];
     var month = req.body.month;
     if (typeof month !== 'undefined' && month !== '') {
