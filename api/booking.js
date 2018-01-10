@@ -11,7 +11,7 @@ router.post('/list', function (req, res, next) {
     var response = [];
 
     var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile  from bk_booking b,bk_user u where b.userid2=u.userid and userid1 =? "];
-    var paramValue=[userid];
+    var paramValue = [userid];
     var month = req.body.month;
     if (typeof month !== 'undefined' && month !== '') {
         sqlPrepare.push("and month = ?");
@@ -93,6 +93,8 @@ router.post('/create', function (req, res, next) {
                 res.setHeader('Content-Type', 'application/json');
                 res.status(200).send(JSON.stringify(response));
             } else {
+
+                log.error("create booking:" + err);
                 res.status(400).send(err);
             }
 
