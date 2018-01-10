@@ -41,7 +41,7 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (unionid,openid,nick_name) values(?,?,?)";
+                    var insertSQL = "insert into bk_user (unionid,openid,nick_name,real_name,mobile) values(?,?,?,'','')";
                     log.debug(insertSQL);
                     conn.query(insertSQL, [unionid,openid, nick_name], function (err, result) {
 
@@ -168,7 +168,7 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (mobile) values(?)";
+                    var insertSQL = "insert into bk_user (mobile,nick_name,real_name,) values(?,'','')";
                     log.debug(insertSQL);
                     conn.query(insertSQL, [mobile], function (err, result) {
 
