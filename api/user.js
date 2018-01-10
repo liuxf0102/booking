@@ -199,6 +199,7 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
 
 
                         } else {
+                            log.error("create uesr:"+err);
                             res.status(400).send(err);
                         }
 
