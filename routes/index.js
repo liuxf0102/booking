@@ -15,4 +15,7 @@ router.use("/booking",booking);
 var weixin = require('../api/weixin');
 router.use("/weixin",weixin);
 
+var qrcode = require('../api/qrcode');
+router.use("/qrcode",qrcode);
+
 module.exports = router;
