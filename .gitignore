@@ -1,0 +1,6 @@
+api/weixin.js
+lib/access_token.js
+node_modules/*
+*.dog
+log/*
+.idea/*
