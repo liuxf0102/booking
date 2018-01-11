@@ -4,3 +4,4 @@ node_modules/*
 *.dog
 log/*
 .idea/*
+public/qr/*

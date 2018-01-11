@@ -335,7 +335,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
     var userid = req.body.userid;
 
     var response = [];
-
+    res.setHeader('Content-Type', 'application/json');
     var sqlPrepare = ["update bk_user set userid = ? "];
     var paramValue = [userid];
 
@@ -351,6 +351,12 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
         sqlPrepare.push(",openid = ?");
         paramValue.push(openid);
     }
+    var nickName = req.body.nickName;
+    if (typeof nickName !== 'undefined' && nickName !== '') {
+        sqlPrepare.push(",nickName = ?");
+        paramValue.push(nickName);
+    }
+
 
     sqlPrepare.push("where userid=?");
     paramValue.push(userid);
@@ -370,7 +376,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
 
                     conn.query(delSql,[unionid,userid],function(err1,result){
                         if(!err1){
-
+                            res.status(200).send(JSON.stringify(response));
                         }else{
                             log.error("delete user error unionid:"+unionid+":"+err1);
                         }
@@ -381,10 +387,11 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
                     response.push({
                         'msg': 'update user error userid:' + userid
                     });
+                    res.status(200).send(JSON.stringify(response));
                 }
 
-                res.setHeader('Content-Type', 'application/json');
-                res.status(200).send(JSON.stringify(response));
+
+
             } else {
                 res.status(400).send(err);
             }
