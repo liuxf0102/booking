@@ -377,7 +377,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
                     });
 
                 } else {
-                    log.error("update user error userid:" +userid+":"+err1);
+                    log.error("update user error userid:" +userid+":"+err);
                     response.push({
                         'msg': 'update user error userid:' + userid
                     });
