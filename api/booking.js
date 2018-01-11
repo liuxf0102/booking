@@ -50,8 +50,6 @@ router.post('/list', function (req, res, next) {
 
 
 });
-
-
 //modify user info
 router.post('/create', function (req, res, next) {
     log.debug("req.body" + JSON.stringify(req.body));

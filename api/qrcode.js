@@ -10,11 +10,12 @@ router.post('/', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     let userid1 = req.body.userid1;
     let userid2 = req.body.userid2;
-    let bookingTime = req.body.bookingTime;
+    let bookingId = req.body.bookingId;
     // if (typeof userid !== 'undefined' && userid !== '') {
     //
     // }
-    let scene=userid1+"-"+userid2+"-"+bookingTime;
+    let scene=userid1+"-"+userid2+"-"+bookingId;
+    log.debug("scene:"+scene);
     if(scene.length>32)
     {
         log.error("scene:"+scene);
@@ -25,7 +26,7 @@ router.post('/', function (req, res) {
         res.status(200).send(JSON.stringify(response));
         return;
     }
-    let qrcodeFullPath=userid2+"-"+bookingTime+".png";
+    let qrcodeFullPath=scene+".png";
     let qrcodeURL=getQRCodeURL(qrcodeFullPath);
 
 

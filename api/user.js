@@ -5,7 +5,7 @@ var pool = require("../lib/mysql_pool");
 var log = require('log4js').getLogger("user");
 log.level = "debug";
 
-// getUserid by openid
+// getOrCreateUserInfoByUnionid
 router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
     var response = [];
     var openid = req.body.openid;
@@ -43,7 +43,7 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
                 } else {
                     var insertSQL = "insert into bk_user (unionid,openid,nick_name,real_name,mobile) values(?,?,?,'','')";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [unionid,openid, nick_name], function (err, result) {
+                    conn.query(insertSQL, [unionid, openid, nick_name], function (err, result) {
 
                         if (!err) {
 
@@ -92,55 +92,7 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
 
 
 });
-
-// getUserid by mobile
-router.post('/getUserInfoByMobile', function (req, res, next) {
-    var response = [];
-    var mobile = req.body.mobile;
-    log.debug("mobile:" + mobile);
-    res.setHeader('Content-Type', 'application/json');
-    pool.conn(function (conn) {
-
-        var selectSQL = "select * from bk_user where mobile = ?";
-        log.debug(selectSQL);
-        conn.query(selectSQL, [mobile], function (err, result) {
-
-            if (!err) {
-                if (result.length === 1) {
-                    log.debug("result:" + result[0].userid);
-                    //set userid
-                    response.push({
-                        'result': 'success',
-                        'myInfo': result[0]
-                    });
-                    res.status(200).send(JSON.stringify(response));
-                } else if (result.length > 1) {
-                    log.error("userid error mobile:" + mobile +"result.length"+ result.length);
-                    response.push({
-                        'result': 'error'
-                    });
-                    res.status(200).send(JSON.stringify(response));
-                } else {
-                    response.push({
-                        'result': 'error',
-                        'myInfo': '{}'
-                    });
-                    res.status(200).send(JSON.stringify(response));
-                }
-
-
-            } else {
-                res.status(400).send(err);
-            }
-
-        });
-
-
-    });
-
-
-});
-
+// getOrCreateUserInfoByMobile
 router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
     var response = [];
     var mobile = req.body.mobile;
@@ -199,7 +151,7 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
 
 
                         } else {
-                            log.error("create uesr:"+err);
+                            log.error("create uesr:" + err);
                             res.status(400).send(err);
                         }
 
@@ -220,49 +172,102 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
 
 
 });
-
-
-
-router.get('/:userid', function (req, res, next) {
-    var userid = req.params.userid;
-
+// getUserid by mobile
+router.post('/getUserInfoByMobile', function (req, res, next) {
     var response = [];
-
-    var sql = "select *  from bk_user where  userid =? ";
-
-    log.debug("sql:" + sql);
-
+    var mobile = req.body.mobile;
+    log.debug("mobile:" + mobile);
+    res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
-        conn.query(sql, [userid], function (err, result) {
-            if (!err) {
-                var response = [];
 
-                if (result.length !== 0) {
+        var selectSQL = "select * from bk_user where mobile = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [mobile], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].userid);
+                    //set userid
                     response.push({
                         'result': 'success',
-                        'data': result
+                        'myInfo': result[0]
                     });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error mobile:" + mobile + "result.length" + result.length);
+                    response.push({
+                        'result': 'error'
+                    });
+                    res.status(200).send(JSON.stringify(response));
                 } else {
                     response.push({
                         'result': 'error',
-                        'msg': 'No Results Found'
+                        'myInfo': '{}'
                     });
+                    res.status(200).send(JSON.stringify(response));
                 }
 
-                res.setHeader('Content-Type', 'application/json');
-                res.status(200).send(JSON.stringify(response));
+
             } else {
                 res.status(400).send(err);
             }
 
-        })
+        });
+
+
     });
 
 
 });
+// getUserid by userid
+router.post('/getUserInfoByUserid', function (req, res, next) {
+    var response = [];
+    var userid = req.body.userid;
+    log.debug("userid:" + userid);
+    res.setHeader('Content-Type', 'application/json');
+    pool.conn(function (conn) {
 
+        var selectSQL = "select * from bk_user where userid = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [userid], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].userid);
+                    //set userid
+                    response.push({
+                        'result': 'success',
+                        'myInfo': result[0]
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error userid:" + mobile + "result.length" + result.length);
+                    response.push({
+                        'result': 'error'
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    response.push({
+                        'result': 'error',
+                        'myInfo': '{}'
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                }
+
+
+            } else {
+                res.status(400).send(err);
+            }
+
+        });
+
+
+    });
+
+
+});
 //modify user info
-router.put('/', function (req, res, next) {
+router.put('/update', function (req, res, next) {
     var userid = req.body.userid;
 
     var response = [];
