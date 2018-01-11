@@ -8,12 +8,13 @@ var urlQR = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=';
 router.post('/', function (req, res) {
     let response = [];
     res.setHeader('Content-Type', 'application/json');
+    let userid1 = req.body.userid1;
     let userid2 = req.body.userid2;
     let bookingTime = req.body.bookingTime;
     // if (typeof userid !== 'undefined' && userid !== '') {
     //
     // }
-    let scene=userid2+"-"+bookingTime;
+    let scene=userid1+"-"+userid2+"-"+bookingTime;
     if(scene.length>32)
     {
         log.error("scene:"+scene);
