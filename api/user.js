@@ -330,6 +330,70 @@ router.put('/update', function (req, res, next) {
 
 });
 
+//merge unionid userid 2 mobile userid
+router.put('/mergeUnionid2mobileid', function (req, res, next) {
+    var userid = req.body.userid;
+
+    var response = [];
+
+    var sqlPrepare = ["update bk_user set userid = ? "];
+    var paramValue = [userid];
+
+
+    var unionid = req.body.unionid;
+    if (typeof unionid !== 'undefined' && unionid !== '') {
+        sqlPrepare.push(",unionid = ?");
+        paramValue.push(unionid);
+    }
+
+    var openid = req.body.openid;
+    if (typeof openid !== 'undefined' && openid !== '') {
+        sqlPrepare.push(",openid = ?");
+        paramValue.push(openid);
+    }
+
+    sqlPrepare.push("where userid=?");
+    paramValue.push(userid);
+
+    var sql = sqlPrepare.join(" ");
+
+    log.debug("sql:" + sql);
+    log.debug("param:" + paramValue);
+
+    let delSql="delete * from bk_user where unionid=? and userid <> ?"
+    pool.conn(function (conn) {
+        conn.query(sql, paramValue, function (err, result) {
+            if (!err) {
+                var response = [];
+
+                if (result.affectedRows !== 0) {
+
+                    conn.query(delSql,[unionid,userid],function(err1,result){
+                        if(!err1){
+
+                        }else{
+                            log.error("delete user error unionid:"+unionid+":"+err1);
+                        }
+                    });
+
+                } else {
+                    log.error("update user error userid:" +userid+":"+err1);
+                    response.push({
+                        'msg': 'update user error userid:' + userid
+                    });
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
+            } else {
+                res.status(400).send(err);
+            }
+
+        })
+    });
+
+
+});
 
 module.exports = router;
 
