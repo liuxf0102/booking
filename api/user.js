@@ -360,7 +360,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
     log.debug("sql:" + sql);
     log.debug("param:" + paramValue);
 
-    let delSql="delete * from bk_user where unionid=? and userid <> ?"
+    let delSql="delete  from bk_user where unionid=? and userid <> ?"
     pool.conn(function (conn) {
         conn.query(sql, paramValue, function (err, result) {
             if (!err) {
