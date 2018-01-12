@@ -101,7 +101,52 @@ router.post('/create', function (req, res, next) {
 
 
 });
+//get booking by id
+router.post('/byId', function (req, res, next) {
+    var response = [];
+    var id = req.body.id;
+    log.debug("id:" + id);
+    res.setHeader('Content-Type', 'application/json');
+    pool.conn(function (conn) {
+
+        var selectSQL = "select * from bk_booking where id = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [id], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].id);
+                    //set userid
+                    response.push({
+                        'result': 'success',
+                        'myInfo': result[0]
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error userid:" + mobile + "result.length" + result.length);
+                    response.push({
+                        'result': 'error'
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    response.push({
+                        'result': 'error',
+                        'myInfo': '{}'
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                }
 
 
+            } else {
+                res.status(400).send(err);
+            }
+
+        });
+
+
+    });
+
+
+});
 module.exports = router;
 
