@@ -119,7 +119,7 @@ router.post('/byId', function (req, res, next) {
                     //set userid
                     response.push({
                         'result': 'success',
-                        'myInfo': result[0]
+                        'data': result[0]
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else if (result.length > 1) {
@@ -131,7 +131,7 @@ router.post('/byId', function (req, res, next) {
                 } else {
                     response.push({
                         'result': 'error',
-                        'myInfo': '{}'
+                        'data': '{}'
                     });
                     res.status(200).send(JSON.stringify(response));
                 }
