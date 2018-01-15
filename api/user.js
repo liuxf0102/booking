@@ -11,8 +11,10 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
     var openid = req.body.openid;
     var unionid = req.body.unionid;
     var nick_name = req.body.nick_name;
+    var icon = req.body.icon;
+    var gender = req.body.gender;
     //var openid = req.params.openid;
-
+    let c_time = new Date().getTime();
     log.debug("openid:" + openid);
     log.debug("unionid:" + unionid);
     log.debug("nick_name:" + nick_name);
@@ -41,9 +43,9 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (unionid,openid,nick_name,real_name,mobile) values(?,?,?,'','')";
+                    var insertSQL = "insert into bk_user (unionid,openid,nick_name,icon,gender,c_time,m_time) values(?,?,?,?,?,?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [unionid, openid, nick_name], function (err, result) {
+                    conn.query(insertSQL, [unionid, openid, nick_name,icon,gender,c_time,c_time], function (err, result) {
 
                         if (!err) {
 
