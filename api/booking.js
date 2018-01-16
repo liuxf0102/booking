@@ -172,6 +172,32 @@ router.put('/update', function (req, res, next) {
         paramValue.push(status);
     }
 
+    var year = req.body.year;
+    if (typeof year !== 'undefined' && year !== '') {
+        sqlPrepare.push(",year = ?");
+        paramValue.push(year);
+    }
+    var month = req.body.month;
+    if (typeof month !== 'undefined' && month !== '') {
+        sqlPrepare.push(",month = ?");
+        paramValue.push(month);
+    }
+    var day = req.body.day;
+    if (typeof day !== 'undefined' && day !== '') {
+        sqlPrepare.push(",day = ?");
+        paramValue.push(day);
+    }
+    var weekday = req.body.weekday;
+    if (typeof weekday !== 'undefined' && weekday !== '') {
+        sqlPrepare.push(",weekday = ?");
+        paramValue.push(weekday);
+    }
+    var hour = req.body.hour;
+    if (typeof hour !== 'undefined' && hour !== '') {
+        sqlPrepare.push(",hour = ?");
+        paramValue.push(hour);
+    }
+
 
     sqlPrepare.push("where id=?");
     paramValue.push(id);
