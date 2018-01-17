@@ -6,12 +6,25 @@ var log = require('log4js').getLogger("booking");
 log.level = "debug";
 
 router.post('/list', function (req, res, next) {
-    var userid = req.body.userid;
+
 
     var response = [];
 
-    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where b.userid2=u.userid and userid1 =? "];
-    var paramValue = [userid];
+    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where b.userid2=u.userid  "];
+    var paramValue = [];
+
+    var userid = req.body.userid;
+    if (typeof userid !== 'undefined' && userid !== '') {
+        sqlPrepare.push("and userid1 = ?");
+        paramValue.push(userid);
+    }
+
+    var userid2 = req.body.userid2;
+    if (typeof userid2 !== 'undefined' && userid2 !== '') {
+        sqlPrepare.push("and userid2 = ?");
+        paramValue.push(userid2);
+    }
+
     var month = req.body.month;
     if (typeof month !== 'undefined' && month !== '') {
         sqlPrepare.push("and month = ?");
@@ -23,7 +36,7 @@ router.post('/list', function (req, res, next) {
     log.debug("param :" + paramValue.join(" "));
 
     pool.conn(function (conn) {
-        conn.query(sql, [userid], function (err, result) {
+        conn.query(sql, paramValue, function (err, result) {
             if (!err) {
                 var response = [];
 
