@@ -84,6 +84,7 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
 
 
             } else {
+                log.error(err);
                 res.status(400).send(err);
             }
 
@@ -353,10 +354,22 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
         sqlPrepare.push(",openid = ?");
         paramValue.push(openid);
     }
-    var nickName = req.body.nickName;
-    if (typeof nickName !== 'undefined' && nickName !== '') {
-        sqlPrepare.push(",nickName = ?");
-        paramValue.push(nickName);
+    var nick_name = req.body.nick_name;
+    if (typeof nick_name !== 'undefined' && nick_name !== '') {
+        sqlPrepare.push(",nick_name = ?");
+        paramValue.push(nick_name);
+    }
+
+    var icon = req.body.icon;
+    if (typeof icon !== 'undefined' && icon !== '') {
+        sqlPrepare.push(",icon = ?");
+        paramValue.push(icon);
+    }
+
+    var gender = req.body.gender;
+    if (typeof gender !== 'undefined' && gender !== '') {
+        sqlPrepare.push(",gender = ?");
+        paramValue.push(gender);
     }
 
 
@@ -395,6 +408,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
 
 
             } else {
+                log.error(err);
                 res.status(400).send(err);
             }
 
