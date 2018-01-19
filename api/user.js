@@ -296,6 +296,12 @@ router.put('/update', function (req, res, next) {
         paramValue.push(mobile);
     }
 
+    var job_location = req.body.job_location;
+    if (typeof job_location !== 'undefined' && job_location !== '') {
+        sqlPrepare.push(",job_location = ?");
+        paramValue.push(job_location);
+    }
+
 
     sqlPrepare.push("where userid=?");
     paramValue.push(userid);

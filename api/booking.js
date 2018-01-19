@@ -10,8 +10,23 @@ router.post('/list', function (req, res, next) {
 
     var response = [];
 
-    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where b.userid2=u.userid  "];
+    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where  "];
     var paramValue = [];
+
+    var linkedUserid = 'userid2';
+
+
+    if (typeof req.body.linkedUserid !== 'undefined' && req.body.linkedUserid == 'userid1') {
+        linkedUserid = 'userid1';
+    }
+
+    if (linkedUserid == 'userid1') {
+        sqlPrepare.push(" b.userid1 = u.userid");
+    }
+    if (linkedUserid == 'userid2') {
+        sqlPrepare.push(" b.userid2 = u.userid");
+    }
+
 
     var userid = req.body.userid;
     if (typeof userid !== 'undefined' && userid !== '') {
@@ -125,12 +140,28 @@ router.post('/byId', function (req, res, next) {
     var response = [];
     var id = req.body.id;
     log.debug("id:" + id);
+    var sqlPrepare = ['select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender,u.job_location  from bk_booking b,bk_user u where'];
+    var linkedUserid = 'userid2';
+
+
+    if (typeof req.body.linkedUserid !== 'undefined' && req.body.linkedUserid == 'userid1') {
+        linkedUserid = 'userid1';
+    }
+
+    if (linkedUserid == 'userid1') {
+        sqlPrepare.push(" b.userid1 = u.userid");
+    }
+    if (linkedUserid == 'userid2') {
+        sqlPrepare.push(" b.userid2 = u.userid");
+    }
+    sqlPrepare.push(" and id =? ");
+    var sql = sqlPrepare.join(" ");
     res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
 
-        var selectSQL = "select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where b.userid2=u.userid and id =? ";
-        log.debug(selectSQL);
-        conn.query(selectSQL, [id], function (err, result) {
+
+        log.debug(sql);
+        conn.query(sql, [id], function (err, result) {
 
             if (!err) {
                 if (result.length === 1) {
@@ -176,7 +207,6 @@ router.put('/update', function (req, res, next) {
 
     var sqlPrepare = ["update bk_booking set id = ? "];
     var paramValue = [id];
-
 
 
     var status = req.body.status;

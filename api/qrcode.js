@@ -9,12 +9,9 @@ router.post('/', function (req, res) {
     let response = [];
     res.setHeader('Content-Type', 'application/json');
     let userid1 = req.body.userid1;
-    let userid2 = req.body.userid2;
-    let bookingId = req.body.bookingId;
-    // if (typeof userid !== 'undefined' && userid !== '') {
-    //
-    // }
-    let scene=userid1+"-"+userid2+"-"+bookingId;
+
+
+    let scene=userid1;
     log.debug("scene:"+scene);
     if(scene.length>32)
     {
@@ -49,7 +46,8 @@ router.post('/', function (req, res) {
             },
 
             body: {
-                'scene': scene
+                'scene': scene,
+                'page':'page/booking/qrBookingNew'
 
             }
         };
