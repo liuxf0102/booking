@@ -99,6 +99,7 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
 router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
     var response = [];
     var mobile = req.body.mobile;
+    let c_time = new Date().getTime();
     log.debug("mobile:" + mobile);
     res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
@@ -123,9 +124,9 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (mobile,nick_name,real_name) values(?,'','')";
+                    var insertSQL = "insert into bk_user (mobile,nick_name,real_name,c_time,m_time) values(?,'','',?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [mobile], function (err, result) {
+                    conn.query(insertSQL, [mobile,c_time,c_time], function (err, result) {
 
                         if (!err) {
 
@@ -272,11 +273,11 @@ router.post('/getUserInfoByUserid', function (req, res, next) {
 //modify user info
 router.put('/update', function (req, res, next) {
     var userid = req.body.userid;
-
+    let m_time = new Date().getTime();
     var response = [];
 
-    var sqlPrepare = ["update bk_user set userid = ? "];
-    var paramValue = [userid];
+    var sqlPrepare = ["update bk_user set m_time=?,userid = ? "];
+    var paramValue = [m_time,userid];
 
 
     var nick_name = req.body.nick_name;
@@ -342,11 +343,11 @@ router.put('/update', function (req, res, next) {
 //merge unionid userid 2 mobile userid
 router.put('/mergeUnionid2mobileid', function (req, res, next) {
     var userid = req.body.userid;
-
+    let m_time = new Date().getTime();
     var response = [];
     res.setHeader('Content-Type', 'application/json');
-    var sqlPrepare = ["update bk_user set userid = ? "];
-    var paramValue = [userid];
+    var sqlPrepare = ["update bk_user set m_time=?,userid = ? "];
+    var paramValue = [m_time,userid];
 
 
     var unionid = req.body.unionid;
