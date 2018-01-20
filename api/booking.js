@@ -34,6 +34,12 @@ router.post('/list', function (req, res, next) {
         paramValue.push(userid);
     }
 
+    var userid1 = req.body.userid1;
+    if (typeof userid1 !== 'undefined' && userid1 !== '') {
+        sqlPrepare.push("and userid1 = ?");
+        paramValue.push(userid1);
+    }
+
     var userid2 = req.body.userid2;
     if (typeof userid2 !== 'undefined' && userid2 !== '') {
         sqlPrepare.push("and userid2 = ?");
