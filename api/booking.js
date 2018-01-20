@@ -256,6 +256,12 @@ router.put('/update', function (req, res, next) {
         sqlPrepare.push(",memo2 = ?");
         paramValue.push(memo2);
     }
+    var memo2_1 = req.body.memo2_1;
+    if (typeof memo2_1 !== 'undefined' && memo2_1 !== '') {
+        sqlPrepare.push(",memo2_1 = ?");
+        paramValue.push(memo2_1);
+    }
+
     sqlPrepare.push("where id=?");
     paramValue.push(id);
 
