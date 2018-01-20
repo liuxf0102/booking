@@ -9,9 +9,9 @@ router.post('/list', function (req, res, next) {
 
 
     var response = [];
-
-    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where  "];
-    var paramValue = [];
+    let c_time =new Date().getTime()-180*24*3600*1000;
+    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where  b.c_time >? "];
+    var paramValue = [c_time];
 
     var linkedUserid = 'userid2';
 
@@ -21,10 +21,10 @@ router.post('/list', function (req, res, next) {
     }
 
     if (linkedUserid == 'userid1') {
-        sqlPrepare.push(" b.userid1 = u.userid");
+        sqlPrepare.push("and b.userid1 = u.userid");
     }
     if (linkedUserid == 'userid2') {
-        sqlPrepare.push(" b.userid2 = u.userid");
+        sqlPrepare.push("and b.userid2 = u.userid");
     }
 
 
