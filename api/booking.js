@@ -240,7 +240,11 @@ router.put('/update', function (req, res, next) {
         sqlPrepare.push(",hour = ?");
         paramValue.push(hour);
     }
-
+    var memo = req.body.memo;
+    if (typeof memo !== 'undefined' && memo !== '') {
+        sqlPrepare.push(",memo = ?");
+        paramValue.push(memo);
+    }
 
     sqlPrepare.push("where id=?");
     paramValue.push(id);
