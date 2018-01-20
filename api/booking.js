@@ -246,12 +246,16 @@ router.put('/update', function (req, res, next) {
         sqlPrepare.push(",hour = ?");
         paramValue.push(hour);
     }
-    var memo = req.body.memo;
-    if (typeof memo !== 'undefined' && memo !== '') {
-        sqlPrepare.push(",memo = ?");
-        paramValue.push(memo);
+    var memo1 = req.body.memo1;
+    if (typeof memo1 !== 'undefined' && memo1 !== '') {
+        sqlPrepare.push(",memo1 = ?");
+        paramValue.push(memo1);
     }
-
+    var memo2 = req.body.memo2;
+    if (typeof memo2 !== 'undefined' && memo2 !== '') {
+        sqlPrepare.push(",memo2 = ?");
+        paramValue.push(memo2);
+    }
     sqlPrepare.push("where id=?");
     paramValue.push(id);
 
