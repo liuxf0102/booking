@@ -262,6 +262,12 @@ router.put('/update', function (req, res, next) {
         paramValue.push(memo2_1);
     }
 
+    var prop_class = req.body.prop_class;
+    if (typeof prop_class !== 'undefined' && prop_class !== '') {
+        sqlPrepare.push(",prop_class = ?");
+        paramValue.push(prop_class);
+    }
+
     sqlPrepare.push("where id=?");
     paramValue.push(id);
 
