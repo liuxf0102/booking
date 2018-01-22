@@ -10,7 +10,7 @@ router.post('/list', function (req, res, next) {
 
     var response = [];
     let c_time =new Date().getTime()-180*24*3600*1000;
-    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender  from bk_booking b,bk_user u where  b.c_time >? and status >-1 "];
+    var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender,u.job_location  from bk_booking b,bk_user u where  b.c_time >? and status >-1 "];
     var paramValue = [c_time];
 
     var linkedUserid = 'userid2';
