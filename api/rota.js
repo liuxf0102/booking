@@ -263,8 +263,7 @@ router.put('/updateOrCreate', function (req, res, next) {
 
                 if (result.affectedRows !== 0) {
                     response.push({
-                        'result': 'success',
-                        'id': id
+                        'result': 'success'
                     });
                 } else {
 
