@@ -66,7 +66,7 @@ router.post('/create', function (req, res, next) {
     var response = [];
 
     var sqlPrepare = ["insert into bk_rota (userid,flag,c_time,m_time) values (?,?,?,?)"];
-    var paramValue = [userid1, flag, c_time, c_time];
+    var paramValue = [userid, flag, c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 
