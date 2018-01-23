@@ -265,6 +265,7 @@ router.put('/updateOrCreate', function (req, res, next) {
                     response.push({
                         'result': 'success'
                     });
+                    res.status(200).send(JSON.stringify(response));
                 } else {
 
                     let c_time = new Date().getTime();
@@ -308,7 +309,7 @@ router.put('/updateOrCreate', function (req, res, next) {
                 }
 
 
-                res.status(200).send(JSON.stringify(response));
+
             } else {
                 res.status(400).send(err);
             }
