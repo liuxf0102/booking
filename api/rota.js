@@ -58,15 +58,15 @@ router.post('/create', function (req, res, next) {
     log.debug("req.body" + JSON.stringify(req.body));
     var userid = req.body.userid;
 
-    var day_time = req.body.day_time;
+    var day = req.body.day;
     var flag = req.body.flag;
 
     let c_time = new Date().getTime();
     res.setHeader('Content-Type', 'application/json');
     var response = [];
 
-    var sqlPrepare = ["insert into bk_rota (userid,day_time,flag,c_time,m_time) values (?,?,?,?,?)"];
-    var paramValue = [userid,day_time, flag, c_time, c_time];
+    var sqlPrepare = ["insert into bk_rota (userid,day,flag,c_time,m_time) values (?,?,?,?,?)"];
+    var paramValue = [userid,day, flag, c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 
@@ -269,7 +269,7 @@ router.put('/updateOrCreate', function (req, res, next) {
                 } else {
 
                     let c_time = new Date().getTime();
-                    let sqlCreatePrepare = ["insert into bk_rota (userid,day_time,flag,c_time,m_time) values (?,?,?,?,?)"];
+                    let sqlCreatePrepare = ["insert into bk_rota (userid,day,flag,c_time,m_time) values (?,?,?,?,?)"];
                     var paramCreateValue = [userid,day, flag, c_time, c_time];
 
                     var sqlCreate = sqlCreatePrepare.join(" ");
