@@ -218,6 +218,107 @@ router.put('/update', function (req, res, next) {
 
 });
 
+router.put('/updateOrCreate', function (req, res, next) {
+    var userid = req.body.userid;
+
+    var response = [];
+
+    var sqlPrepare = ["update bk_rota set userid = ? "];
+    var paramValue = [userid];
+
+
+    var flag = req.body.flag;
+    if (typeof flag !== 'undefined' && flag !== '') {
+        sqlPrepare.push(",flag = ?");
+        paramValue.push(flag);
+    }
+
+    var memo = req.body.memo;
+    if (typeof memo !== 'undefined' && memo !== '') {
+        sqlPrepare.push(",memo = ?");
+        paramValue.push(memo);
+    }
+
+
+    sqlPrepare.push("where userid=?");
+    paramValue.push(userid);
+    sqlPrepare.push("and day = ?");
+    var day = req.body.day;
+    if (typeof day !== 'undefined' && day !== '') {
+
+        paramValue.push(day);
+    }else{
+        paramValue.push('day');
+    }
+
+    var sql = sqlPrepare.join(" ");
+
+    log.debug("sql:" + sql);
+    log.debug("param:" + paramValue);
+
+    pool.conn(function (conn) {
+        conn.query(sql, paramValue, function (err, result) {
+            if (!err) {
+                var response = [];
+
+                if (result.affectedRows !== 0) {
+                    response.push({
+                        'result': 'success',
+                        'id': id
+                    });
+                } else {
+
+                    let c_time = new Date().getTime();
+                    let sqlCreatePrepare = ["insert into bk_rota (userid,day_time,flag,c_time,m_time) values (?,?,?,?,?)"];
+                    var paramCreateValue = [userid,day, flag, c_time, c_time];
+
+                    var sqlCreate = sqlCreatePrepare.join(" ");
+
+                    log.debug("sqlCreate:" + sqlCreate);
+                    log.debug("param:" + paramCreateValue);
+                    conn.query(sqlCreate, paramCreateValue, function (err, result) {
+                        if (!err) {
+
+
+                            if (result.affectedRows !== 0) {
+                                response.push({
+                                    'result': 'success',
+                                    'id': result.insertId
+                                });
+                            } else {
+                                response.push({
+                                    'msg': 'create  error :'
+                                });
+                            }
+
+
+                            res.status(200).send(JSON.stringify(response));
+                        } else {
+
+                            log.error("create booking:" + err);
+                            response.push({
+                                'result': 'error',
+                                'data': err
+                            });
+                            res.status(400).send(JSON.stringify(response));
+                        }
+
+                    })
+
+
+                }
+
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
+            } else {
+                res.status(400).send(err);
+            }
+
+        })
+    });
+
+
+});
 
 module.exports = router;
 
