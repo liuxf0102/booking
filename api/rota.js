@@ -255,7 +255,7 @@ router.put('/updateOrCreate', function (req, res, next) {
 
     log.debug("sql:" + sql);
     log.debug("param:" + paramValue);
-
+    res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
         conn.query(sql, paramValue, function (err, result) {
             if (!err) {
@@ -291,7 +291,7 @@ router.put('/updateOrCreate', function (req, res, next) {
                             }
 
 
-                            res.status(200).send(JSON.stringify(response));
+
                         } else {
 
                             log.error("create booking:" + err);
@@ -307,7 +307,7 @@ router.put('/updateOrCreate', function (req, res, next) {
 
                 }
 
-                res.setHeader('Content-Type', 'application/json');
+
                 res.status(200).send(JSON.stringify(response));
             } else {
                 res.status(400).send(err);
