@@ -1,4 +1,5 @@
 api/weixin.js
+api/qrcode.js
 lib/access_token.js
 node_modules/*
 *.dog
