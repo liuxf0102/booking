@@ -9,14 +9,14 @@ router.post('/list', function (req, res, next) {
 
 
     var response = [];
-    let c_time =new Date().getTime()-180*24*3600*1000;
+    let c_time = new Date().getTime() - 180 * 24 * 3600 * 1000;
     var sqlPrepare = ["select *  from bk_rota where  c_time >? "];
     var paramValue = [c_time];
     sqlPrepare.push("and userid = ?");
     var userid = req.body.userid;
     if (typeof userid !== 'undefined' && userid !== '') {
         paramValue.push(userid);
-    }else{
+    } else {
         paramValue.push('userid');
     }
 
@@ -30,21 +30,17 @@ router.post('/list', function (req, res, next) {
             if (!err) {
                 var response = [];
 
-                if (result.length !== 0) {
-                    response.push({
-                        'result': 'success',
-                        'data': result
-                    });
-                } else {
-                    response.push({
-                        'result': 'error',
-                        'msg': 'No Results Found'
-                    });
-                }
+
+                response.push({
+                    'result': 'success',
+                    'data': result
+                });
+
 
                 res.setHeader('Content-Type', 'application/json');
                 res.status(200).send(JSON.stringify(response));
             } else {
+                log.error("err:"+err);
                 res.status(400).send(err);
             }
 
@@ -66,7 +62,7 @@ router.post('/create', function (req, res, next) {
     var response = [];
 
     var sqlPrepare = ["insert into bk_rota (userid,day,flag,c_time,m_time) values (?,?,?,?,?)"];
-    var paramValue = [userid,day, flag, c_time, c_time];
+    var paramValue = [userid, day, flag, c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 
@@ -113,7 +109,7 @@ router.post('/byId', function (req, res, next) {
     log.debug("id:" + id);
     var sqlPrepare = ['select *,u.real_name,u.nick_name,u.mobile,u.icon,u.gender,u.job_location  from bk_rota b,bk_user u where'];
 
-        sqlPrepare.push(" b.userid = u.userid");
+    sqlPrepare.push(" b.userid = u.userid");
 
     sqlPrepare.push(" and id =? ");
     var sql = sqlPrepare.join(" ");
@@ -247,7 +243,7 @@ router.put('/updateOrCreate', function (req, res, next) {
     if (typeof day !== 'undefined' && day !== '') {
 
         paramValue.push(day);
-    }else{
+    } else {
         paramValue.push('day');
     }
 
@@ -270,7 +266,7 @@ router.put('/updateOrCreate', function (req, res, next) {
 
                     let c_time = new Date().getTime();
                     let sqlCreatePrepare = ["insert into bk_rota (userid,day,flag,c_time,m_time) values (?,?,?,?,?)"];
-                    var paramCreateValue = [userid,day, flag, c_time, c_time];
+                    var paramCreateValue = [userid, day, flag, c_time, c_time];
 
                     var sqlCreate = sqlCreatePrepare.join(" ");
 
@@ -307,7 +303,6 @@ router.put('/updateOrCreate', function (req, res, next) {
 
 
                 }
-
 
 
             } else {

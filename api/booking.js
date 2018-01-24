@@ -288,6 +288,7 @@ router.put('/update', function (req, res, next) {
                     });
                 } else {
                     response.push({
+                        'result': 'error',
                         'msg': 'update  error id:' + id
                     });
                 }
