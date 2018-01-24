@@ -61,17 +61,17 @@ router.post('/list', function (req, res, next) {
             if (!err) {
                 var response = [];
 
-                if (result.length !== 0) {
+                //if (result.length !== 0) {
                     response.push({
                         'result': 'success',
                         'data': result
                     });
-                } else {
-                    response.push({
-                        'result': 'error',
-                        'msg': 'No Results Found'
-                    });
-                }
+                //} else {
+                    // response.push({
+                    //     'result': 'success',
+                    //     'msg': 'No Results Found'
+                    // });
+                //}
 
                 res.setHeader('Content-Type', 'application/json');
                 res.status(200).send(JSON.stringify(response));
