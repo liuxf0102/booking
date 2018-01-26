@@ -27,24 +27,35 @@ router.post('/list', function (req, res, next) {
         sqlPrepare.push("and b.userid2 = u.userid");
     }
 
-
+    let useridIsReady=false;
     var userid = req.body.userid;
     if (typeof userid !== 'undefined' && userid !== '') {
         sqlPrepare.push("and userid1 = ?");
         paramValue.push(userid);
+        useridIsReady=true;
     }
-
+    let userid1IsReady=false;
     var userid1 = req.body.userid1;
     if (typeof userid1 !== 'undefined' && userid1 !== '') {
+        //log.error("userid1 :"+userid1);
         sqlPrepare.push("and userid1 = ?");
         paramValue.push(userid1);
+        userid1IsReady=true;
     }
-
+    let userid2IsReady=false;
     var userid2 = req.body.userid2;
     if (typeof userid2 !== 'undefined' && userid2 !== '') {
+        //log.error("userid2 :"+userid2);
         sqlPrepare.push("and userid2 = ?");
         paramValue.push(userid2);
+        userid2IsReady=true;
     }
+    if(!useridIsReady&&!userid1IsReady&&!userid2IsReady){
+        sqlPrepare.push("and userid1 = ?");
+        paramValue.push('userid1');
+        log.error("userid1 or userid2 is error");
+    }
+
 
     var month = req.body.month;
     if (typeof month !== 'undefined' && month !== '') {
@@ -96,12 +107,20 @@ router.post('/create', function (req, res, next) {
     var weekday = req.body.weekday;
     var hour = req.body.hour;
     var minute = req.body.minute;
+    var memo1 = req.body.memo1;
+    if (typeof memo1 == 'undefined') {
+        memo1="";
+    }
+    var memo2 = req.body.memo2;
+    if (typeof memo2 == 'undefined' ) {
+        memo2="";
+    }
     let c_time = new Date().getTime();
     res.setHeader('Content-Type', 'application/json');
     var response = [];
 
-    var sqlPrepare = ["insert into bk_booking (userid1,userid2,status,year,month,day,weekday,hour,minute,c_time,m_time) values (?,?,?,?,?,?,?,?,?,?,?)"];
-    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute, c_time, c_time];
+    var sqlPrepare = ["insert into bk_booking (userid1,userid2,status,year,month,day,weekday,hour,minute,memo1,memo2,c_time,m_time) values (?,?,?,?,?,?,?,?,?,?,?,?,?)"];
+    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute,memo1,memo2 ,c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pool = require("../lib/mysql_pool");
+var userInfo = require("../lib/userInfo");
 
 var log = require('log4js').getLogger("user");
 log.level = "debug";
@@ -13,6 +14,12 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
     var nick_name = req.body.nick_name;
     var icon = req.body.icon;
     var gender = req.body.gender;
+
+
+    if (typeof unionid == 'undefined' || unionid == '') {
+        unionid = "unionid";
+        log.error("userid is unionid");
+    }
     //var openid = req.params.openid;
     let c_time = new Date().getTime();
     log.debug("openid:" + openid);
@@ -45,7 +52,7 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
                 } else {
                     var insertSQL = "insert into bk_user (unionid,openid,nick_name,icon,gender,c_time,m_time) values(?,?,?,?,?,?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [unionid, openid, nick_name,icon,gender,c_time,c_time], function (err, result) {
+                    conn.query(insertSQL, [unionid, openid, nick_name, icon, gender, c_time, c_time], function (err, result) {
 
                         if (!err) {
 
@@ -99,6 +106,10 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
 router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
     var response = [];
     var mobile = req.body.mobile;
+    if (typeof mobile == 'undefined' || mobile == '') {
+        mobile = "mobile";
+        log.error("userid is mobile");
+    }
     let c_time = new Date().getTime();
     log.debug("mobile:" + mobile);
     res.setHeader('Content-Type', 'application/json');
@@ -126,7 +137,7 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
                 } else {
                     var insertSQL = "insert into bk_user (mobile,nick_name,real_name,c_time,m_time) values(?,'','',?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [mobile,c_time,c_time], function (err, result) {
+                    conn.query(insertSQL, [mobile, c_time, c_time], function (err, result) {
 
                         if (!err) {
 
@@ -180,6 +191,10 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
 router.post('/getUserInfoByMobile', function (req, res, next) {
     var response = [];
     var mobile = req.body.mobile;
+    if (typeof mobile == 'undefined' || mobile == '') {
+        mobile = "mobile";
+        log.error("userid is mobile");
+    }
     log.debug("mobile:" + mobile);
     res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
@@ -227,6 +242,10 @@ router.post('/getUserInfoByMobile', function (req, res, next) {
 router.post('/getUserInfoByUserid', function (req, res, next) {
     var response = [];
     var userid = req.body.userid;
+    if (typeof userid == 'undefined' || userid == '') {
+        userid = "userid";
+        log.error("userid is error");
+    }
     log.debug("userid:" + userid);
     res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
@@ -245,7 +264,7 @@ router.post('/getUserInfoByUserid', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else if (result.length > 1) {
-                    log.error("userid error userid:" + mobile + "result.length" + result.length);
+                    log.error("userid error userid:" + result.length);
                     response.push({
                         'result': 'error'
                     });
@@ -273,11 +292,15 @@ router.post('/getUserInfoByUserid', function (req, res, next) {
 //modify user info
 router.put('/update', function (req, res, next) {
     var userid = req.body.userid;
+    if (typeof userid == 'undefined' || userid == '') {
+        userid = "userid";
+        log.error("userid is error");
+    }
     let m_time = new Date().getTime();
     var response = [];
 
     var sqlPrepare = ["update bk_user set m_time=?,userid = ? "];
-    var paramValue = [m_time,userid];
+    var paramValue = [m_time, userid];
 
 
     var nick_name = req.body.nick_name;
@@ -296,12 +319,53 @@ router.put('/update', function (req, res, next) {
         sqlPrepare.push(",mobile = ?");
         paramValue.push(mobile);
     }
+    var job_title = req.body.job_title;
+    if (typeof job_title !== 'undefined' && job_title !== '') {
+        sqlPrepare.push(",job_title = ?");
+        paramValue.push(job_title);
+    }
+    ;
 
     var job_location = req.body.job_location;
     if (typeof job_location !== 'undefined' && job_location !== '') {
         sqlPrepare.push(",job_location = ?");
         paramValue.push(job_location);
     }
+    ;
+
+    var job_office = req.body.job_office;
+    if (typeof job_office !== 'undefined' && job_office !== '') {
+        sqlPrepare.push(",job_office = ?");
+        paramValue.push(job_office);
+    }
+    ;
+    var goodat = req.body.goodat;
+    if (typeof goodat !== 'undefined' && goodat !== '') {
+        sqlPrepare.push(",goodat = ?");
+        paramValue.push(goodat);
+    }
+    ;
+
+
+    var memo = req.body.memo;
+    if (typeof memo !== 'undefined' && memo !== '') {
+        sqlPrepare.push(",memo = ?");
+        paramValue.push(memo);
+    }
+    ;
+
+    var icon = req.body.icon;
+    if (typeof icon !== 'undefined' && icon !== '') {
+        sqlPrepare.push(",icon = ?");
+        paramValue.push(icon);
+    }
+    ;
+    var gender = req.body.gender;
+    if (typeof gender !== 'undefined' && gender !== '') {
+        sqlPrepare.push(",gender = ?");
+        paramValue.push(gender);
+    }
+    ;
 
 
     sqlPrepare.push("where userid=?");
@@ -340,6 +404,107 @@ router.put('/update', function (req, res, next) {
 
 });
 
+router.put('/appendFormids', function (req, res, next) {
+    let userid = req.body.userid;
+    if (typeof userid == 'undefined' || userid == '') {
+        userid = "userid";
+        log.error("userid is error");
+    }
+    let strFormidsNew = req.body.formids;
+    log.debug("strFormidsNew:" + strFormidsNew);
+    let formidsNew = [];
+    if (typeof strFormidsNew !== 'undefined' && strFormidsNew !== '') {
+        formidsNew = JSON.parse(strFormidsNew)
+    }
+    ;
+    //get old fromIds from db
+    userInfo.getUserInfo(userid, function (userInfo) {
+
+        let strFormidsOld = userInfo.formids;
+        let formidsOld = [];
+        if (strFormidsOld == "") {
+            formidsOld = [];
+        } else {
+            formidsOld = JSON.parse(strFormidsOld);
+            //check whether the formId has expired
+            let formidsOldCount = formidsOld.length;
+            let expireCount = 0;
+            for (let i = 0; i < formidsOldCount; i++) {
+                //log.debug("formidsOld[]" + i + ":" + JSON.stringify(formidsOld[i].expire));
+                try {
+
+                    if (formidsOld[0].expire < new Date().getTime() ) {
+                        expireCount++;
+                    }
+                } catch (e) {
+                    log.error(e);
+                }
+            }
+
+            for (let i = 0; i < expireCount; i++) {
+                formidsOld.shift();
+            }
+            log.debug("formidsOld checked:" + JSON.stringify(formidsOld));
+        }
+        //log.debug("formids old:" +formidsOld.length+":"+JSON.stringify(formidsOld));
+        //log.debug("formids new:" + JSON.stringify(formidsNew));
+        for (let n = 0; n < formidsNew.length; n++) {
+            formidsOld.push(formidsNew[n]);
+        }
+
+
+        //log.debug("formids appended:" + JSON.stringify(formidsOld));
+        // Keep the latest 10 formids
+        let formidsCount = formidsOld.length;
+        for (let i = 10; i < formidsCount; i++) {
+            formidsOld.shift();
+        }
+
+
+        let tmpStrFormids = JSON.stringify(formidsOld);
+        //log.debug("fromIds to db:"+tmpStrFormids);
+        let m_time = new Date().getTime();
+        var response = [];
+
+        var sqlPrepare = ["update bk_user set m_time=?,formids = ? "];
+        var paramValue = [m_time, tmpStrFormids];
+
+        sqlPrepare.push("where userid=?");
+        paramValue.push(userid);
+
+        var sql = sqlPrepare.join(" ");
+
+        log.debug("sql:" + sql);
+        log.debug("param:" + paramValue);
+
+        pool.conn(function (conn) {
+            conn.query(sql, paramValue, function (err, result) {
+                if (!err) {
+                    var response = [];
+
+                    if (result.affectedRows !== 0) {
+                        response.push({
+                            'result': 'success',
+                            'userid': userid
+                        });
+                    } else {
+                        response.push({
+                            'msg': 'update user error userid:' + userid
+                        });
+                    }
+
+                    res.setHeader('Content-Type', 'application/json');
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    res.status(400).send(err);
+                }
+
+            })
+        });
+    });
+
+});
+
 //merge unionid userid 2 mobile userid
 router.put('/mergeUnionid2mobileid', function (req, res, next) {
     var userid = req.body.userid;
@@ -347,7 +512,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
     var response = [];
     res.setHeader('Content-Type', 'application/json');
     var sqlPrepare = ["update bk_user set m_time=?,userid = ? "];
-    var paramValue = [m_time,userid];
+    var paramValue = [m_time, userid];
 
 
     var unionid = req.body.unionid;
@@ -388,7 +553,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
     log.debug("sql:" + sql);
     log.debug("param:" + paramValue);
 
-    let delSql="delete  from bk_user where unionid=? and userid <> ?"
+    let delSql = "delete  from bk_user where unionid=? and userid <> ?"
     pool.conn(function (conn) {
         conn.query(sql, paramValue, function (err, result) {
             if (!err) {
@@ -396,22 +561,21 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
 
                 if (result.affectedRows !== 0) {
 
-                    conn.query(delSql,[unionid,userid],function(err1,result){
-                        if(!err1){
+                    conn.query(delSql, [unionid, userid], function (err1, result) {
+                        if (!err1) {
                             res.status(200).send(JSON.stringify(response));
-                        }else{
-                            log.error("delete user error unionid:"+unionid+":"+err1);
+                        } else {
+                            log.error("delete user error unionid:" + unionid + ":" + err1);
                         }
                     });
 
                 } else {
-                    log.error("update user error userid:" +userid+":"+err);
+                    log.error("update user error userid:" + userid + ":" + err);
                     response.push({
                         'msg': 'update user error userid:' + userid
                     });
                     res.status(200).send(JSON.stringify(response));
                 }
-
 
 
             } else {
