@@ -330,7 +330,7 @@ router.put('/update', function (req, res, next) {
                     if(status.toString()=="1") {
                         m_booking.getBooking(id,function (booking) {
                             let userid1=booking.userid1;
-                            let userid2=booking.userid2;
+                            let tmpUserid2=booking.userid2;
                             m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
                                 let msg = {};
                                 msg.real_name = tmpUserInfo.real_name;
