@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require("../lib/mysql_pool");
 var m_weixinMsg = require("../lib/weixinMsg");
+var m_weixinMsg_update = require("../lib/weixinMsg");
 var m_userInfo = require("../lib/userInfo");
 var m_booking = require("../lib/booking");
 
@@ -338,7 +339,7 @@ router.put('/update', function (req, res, next) {
                                 msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
                                 log.debug("sendMsg:userid2"+tmpUserid2);
                                 try {
-                                    m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
+                                    m_weixinMsg_update.sendMsg(tmpUserid2, msg, function () {
 
                                     });
                                 }catch (e){
