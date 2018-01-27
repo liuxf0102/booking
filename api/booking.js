@@ -331,14 +331,14 @@ router.put('/update', function (req, res, next) {
                         m_booking.getBooking(id,function (booking) {
                             let userid1=booking.userid1;
                             let userid2=booking.userid2;
-                            m_userInfo.getUserInfo(userid1, function (userInfo) {
+                            m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
                                 let msg = {};
-                                msg.real_name = userInfo.real_name;
+                                msg.real_name = tmpUserInfo.real_name;
                                 msg.status = "审核通过";
                                 msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
                                 log.debug("sendMsg:userid2"+userid2);
                                 try {
-                                    m_weixinMsg.sendMsg(userid2, msg, function () {
+                                    m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
 
                                     });
                                 }catch (e){
