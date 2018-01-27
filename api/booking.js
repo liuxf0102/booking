@@ -337,9 +337,13 @@ router.put('/update', function (req, res, next) {
                                 msg.status = "审核通过";
                                 msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
                                 log.debug("sendMsg:userid2"+userid2);
-                                m_weixinMsg.sendMsg(userid2, msg, function () {
+                                try {
+                                    m_weixinMsg.sendMsg(userid2, msg, function () {
 
-                                });
+                                    });
+                                }catch (e){
+                                    log.error(e);
+                                }
                             });
                         })
 
