@@ -142,7 +142,7 @@ router.post('/create', function (req, res, next) {
                         'id': result.insertId
                     });
                     //send msg
-                    if(status.toString()=="0") {
+                    if("0"==status) {
                         m_userInfo.getUserInfo(userid1, function (userInfo) {
                             let msg = {};
                             msg.real_name = userInfo.real_name;
@@ -328,7 +328,7 @@ router.put('/update', function (req, res, next) {
                     // booking approved send msg to userid2
 
                     //send msg
-                    if(status.toString()=="1") {
+                    if("1"==status) {
                         m_booking.getBooking(id,function (booking) {
                             let userid1=booking.userid1;
                             let tmpUserid2=booking.userid2;
