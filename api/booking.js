@@ -336,7 +336,7 @@ router.put('/update', function (req, res, next) {
                                 msg.real_name = tmpUserInfo.real_name;
                                 msg.status = "审核通过";
                                 msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
-                                log.debug("sendMsg:userid2"+userid2);
+                                log.debug("sendMsg:userid2"+tmpUserid2);
                                 try {
                                     m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
 
