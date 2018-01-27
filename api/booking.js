@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var pool = require("../lib/mysql_pool");
+var m_weixinMsg = require("../lib/weixinMsg");
+var m_userInfo = require("../lib/userInfo");
 
 var log = require('log4js').getLogger("booking");
 log.level = "debug";
@@ -137,6 +139,21 @@ router.post('/create', function (req, res, next) {
                         'result': 'success',
                         'id': result.insertId
                     });
+                    //send msg
+                    if(status.toString()=="0") {
+                        m_userInfo.getUserInfo(userid1, function (userInfo) {
+                            let msg = {};
+                            msg.real_name = userInfo.real_name;
+                            msg.status = "待审核";
+                            msg.time_format = month + "月" + day + "号 " + hour + "点";
+                            m_weixinMsg.sendMsg(userid2, msg, function () {
+
+                            });
+                        });
+                    }
+
+
+
                 } else {
                     response.push({
                         'msg': 'create booking error :'
