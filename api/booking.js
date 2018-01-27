@@ -3,6 +3,7 @@ var router = express.Router();
 var pool = require("../lib/mysql_pool");
 var m_weixinMsg = require("../lib/weixinMsg");
 var m_userInfo = require("../lib/userInfo");
+var m_booking = require("../lib/booking");
 
 var log = require('log4js').getLogger("booking");
 log.level = "debug";
@@ -322,6 +323,28 @@ router.put('/update', function (req, res, next) {
                         'result': 'success',
                         'id': id
                     });
+
+                    // booking approved send msg to userid2
+
+                    //send msg
+                    if(status.toString()=="1") {
+                        m_booking.getBooking(id,function (booking) {
+                            let userid1=booking.userid1;
+                            let userid2=booking.userid2;
+                            m_userInfo.getUserInfo(userid1, function (userInfo) {
+                                let msg = {};
+                                msg.real_name = userInfo.real_name;
+                                msg.status = "审核通过";
+                                msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
+                                m_weixinMsg.sendMsg(userid2, msg, function () {
+
+                                });
+                            });
+                        })
+
+
+                    }
+
                 } else {
                     response.push({
                         'result': 'error',
