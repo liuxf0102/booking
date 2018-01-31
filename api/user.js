@@ -454,9 +454,9 @@ router.put('/appendFormids', function (req, res, next) {
 
 
         //log.debug("formids appended:" + JSON.stringify(formidsOld));
-        // Keep the latest 10 formids
+        // Keep the latest 25 formids
         let formidsCount = formidsOld.length;
-        for (let i = 10; i < formidsCount; i++) {
+        for (let i = 25; i < formidsCount; i++) {
             formidsOld.shift();
         }
 
