@@ -364,9 +364,12 @@ router.put('/update', function (req, res, next) {
     if (typeof gender !== 'undefined' && gender !== '') {
         sqlPrepare.push(",gender = ?");
         paramValue.push(gender);
-    }
-    ;
-
+    };
+    var config = req.body.config;
+    if (typeof config !== 'undefined' && config !== '') {
+        sqlPrepare.push(",config = ?");
+        paramValue.push(config);
+    };
 
     sqlPrepare.push("where userid=?");
     paramValue.push(userid);
