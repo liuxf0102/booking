@@ -508,6 +508,10 @@ router.put('/appendFormids', function (req, res, next) {
 //merge unionid userid 2 mobile userid
 router.put('/mergeUnionid2mobileid', function (req, res, next) {
     var userid = req.body.userid;
+    if (typeof userid == 'undefined' || userid == '') {
+        userid = "userid";
+        log.error("userid is error");
+    }
     let m_time = new Date().getTime();
     var response = [];
     res.setHeader('Content-Type', 'application/json');

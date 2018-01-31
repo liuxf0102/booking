@@ -103,6 +103,11 @@ router.post('/list', function (req, res, next) {
 router.post('/create', function (req, res, next) {
     log.debug("req.body" + JSON.stringify(req.body));
     var userid1 = req.body.userid1;
+    if (typeof userid1 == 'undefined' || userid1 == '') {
+        userid1 = "userid1";
+        log.error("userid1 is error");
+    }
+
     var userid2 = req.body.userid2;
     var status = req.body.status;
     var year = req.body.year;
@@ -183,6 +188,12 @@ router.post('/create', function (req, res, next) {
 router.post('/byId', function (req, res, next) {
     var response = [];
     var id = req.body.id;
+
+    if (typeof id == 'undefined' || id == '') {
+        id = "id";
+        log.error("id is error");
+    }
+
     log.debug("id:" + id);
     var sqlPrepare = ['select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender,u.job_location  from bk_booking b,bk_user u where'];
     var linkedUserid = 'userid2';
@@ -246,6 +257,10 @@ router.post('/byId', function (req, res, next) {
 //modify booking
 router.put('/update', function (req, res, next) {
     var id = req.body.id;
+    if (typeof id == 'undefined' || id == '') {
+        id = "id";
+        log.error("id is error");
+    }
 
     var response = [];
 
