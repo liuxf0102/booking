@@ -12,7 +12,7 @@ router.post('/list', function (req, res, next) {
 
 
     var response = [];
-    let c_time =new Date().getTime()-180*24*3600*1000;
+    let c_time = new Date().getTime() - 180 * 24 * 3600 * 1000;
     var sqlPrepare = ["select b.*,u.real_name,u.nick_name,u.mobile,u.icon,u.gender,u.job_location  from bk_booking b,bk_user u where  b.c_time >? and status >-1 "];
     var paramValue = [c_time];
 
@@ -30,30 +30,30 @@ router.post('/list', function (req, res, next) {
         sqlPrepare.push("and b.userid2 = u.userid");
     }
 
-    let useridIsReady=false;
+    let useridIsReady = false;
     var userid = req.body.userid;
     if (typeof userid !== 'undefined' && userid !== '') {
         sqlPrepare.push("and userid1 = ?");
         paramValue.push(userid);
-        useridIsReady=true;
+        useridIsReady = true;
     }
-    let userid1IsReady=false;
+    let userid1IsReady = false;
     var userid1 = req.body.userid1;
     if (typeof userid1 !== 'undefined' && userid1 !== '') {
         //log.error("userid1 :"+userid1);
         sqlPrepare.push("and userid1 = ?");
         paramValue.push(userid1);
-        userid1IsReady=true;
+        userid1IsReady = true;
     }
-    let userid2IsReady=false;
+    let userid2IsReady = false;
     var userid2 = req.body.userid2;
     if (typeof userid2 !== 'undefined' && userid2 !== '') {
         //log.error("userid2 :"+userid2);
         sqlPrepare.push("and userid2 = ?");
         paramValue.push(userid2);
-        userid2IsReady=true;
+        userid2IsReady = true;
     }
-    if(!useridIsReady&&!userid1IsReady&&!userid2IsReady){
+    if (!useridIsReady && !userid1IsReady && !userid2IsReady) {
         sqlPrepare.push("and userid1 = ?");
         paramValue.push('userid1');
         log.error("userid1 or userid2 is error");
@@ -76,15 +76,15 @@ router.post('/list', function (req, res, next) {
                 var response = [];
 
                 //if (result.length !== 0) {
-                    response.push({
-                        'result': 'success',
-                        'data': result
-                    });
+                response.push({
+                    'result': 'success',
+                    'data': result
+                });
                 //} else {
-                    // response.push({
-                    //     'result': 'success',
-                    //     'msg': 'No Results Found'
-                    // });
+                // response.push({
+                //     'result': 'success',
+                //     'msg': 'No Results Found'
+                // });
                 //}
 
                 res.setHeader('Content-Type', 'application/json');
@@ -117,18 +117,18 @@ router.post('/create', function (req, res, next) {
     var minute = req.body.minute;
     var memo1 = req.body.memo1;
     if (typeof memo1 == 'undefined') {
-        memo1="";
+        memo1 = "";
     }
     var memo2 = req.body.memo2;
-    if (typeof memo2 == 'undefined' ) {
-        memo2="";
+    if (typeof memo2 == 'undefined') {
+        memo2 = "";
     }
     let c_time = new Date().getTime();
     res.setHeader('Content-Type', 'application/json');
     var response = [];
 
     var sqlPrepare = ["insert into bk_booking (userid1,userid2,status,year,month,day,weekday,hour,minute,memo1,memo2,c_time,m_time) values (?,?,?,?,?,?,?,?,?,?,?,?,?)"];
-    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute,memo1,memo2 ,c_time, c_time];
+    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute, memo1, memo2, c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 
@@ -146,20 +146,23 @@ router.post('/create', function (req, res, next) {
                         'id': result.insertId
                     });
                     //send msg
-                    if("0"==status) {
-                        m_userInfo.getUserInfo(userid1, function (userInfo) {
-                            let msg = {};
-                            msg.bookingId=result.insertId;
-                            msg.real_name = userInfo.real_name;
-                            msg.status = "待审核";
-                            msg.time_format = month + "月" + day + "号 " + hour + "点";
-                            msg.job_location=userInfo.job_location;
-                            m_weixinMsg.sendMsg(userid2, msg, function () {
+                    if ("0" == status) {
+                        try {
+                            m_userInfo.getUserInfo(userid1, function (userInfo) {
+                                let msg = {};
+                                msg.bookingId = result.insertId;
+                                msg.real_name = userInfo.real_name;
+                                msg.status = "待审核";
+                                msg.time_format = month + "月" + day + "号 " + hour + "点";
+                                msg.job_location = userInfo.job_location;
+                                m_weixinMsg.sendMsg(userid2, msg, function () {
 
+                                });
                             });
-                        });
+                        } catch (e) {
+                            log.error("send message:" + e);
+                        }
                     }
-
 
 
                 } else {
@@ -344,26 +347,28 @@ router.put('/update', function (req, res, next) {
                     // booking approved send msg to userid2
 
                     //send msg
-                    if("1"==status) {
-                        m_booking.getBooking(id,function (booking) {
-                            let userid1=booking.userid1;
-                            let tmpUserid2=booking.userid2;
-                            m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
-                                let msg = {};
-                                msg.bookingId=id;
-                                msg.real_name = tmpUserInfo.real_name;
-                                msg.status = "审核通过";
-                                msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
-                                msg.job_location=tmpUserInfo.job_location;
-                                log.debug("sendMsg:userid2"+tmpUserid2);
-                                try {
+                    if ("1" == status) {
+                        m_booking.getBooking(id, function (booking) {
+                            let userid1 = booking.userid1;
+                            let tmpUserid2 = booking.userid2;
+                            try {
+                                m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
+                                    let msg = {};
+                                    msg.bookingId = id;
+                                    msg.real_name = tmpUserInfo.real_name;
+                                    msg.status = "审核通过";
+                                    msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
+                                    msg.job_location = tmpUserInfo.job_location;
+                                    log.debug("sendMsg:userid2" + tmpUserid2);
+
                                     m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
 
                                     });
-                                }catch (e){
-                                    log.error(e);
-                                }
-                            });
+
+                                });
+                            } catch (e) {
+                                log.error("update send message " + e);
+                            }
                         })
 
 
