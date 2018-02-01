@@ -123,12 +123,16 @@ router.post('/create', function (req, res, next) {
     if (typeof memo2 == 'undefined') {
         memo2 = "";
     }
+    var prop_class = req.body.prop_class;
+    if (typeof prop_class == 'undefined') {
+        prop_class = "";
+    }
     let c_time = new Date().getTime();
     res.setHeader('Content-Type', 'application/json');
     var response = [];
 
-    var sqlPrepare = ["insert into bk_booking (userid1,userid2,status,year,month,day,weekday,hour,minute,memo1,memo2,c_time,m_time) values (?,?,?,?,?,?,?,?,?,?,?,?,?)"];
-    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute, memo1, memo2, c_time, c_time];
+    var sqlPrepare = ["insert into bk_booking (userid1,userid2,status,year,month,day,weekday,hour,minute,memo1,memo2,prop_class,c_time,m_time) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"];
+    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute, memo1, memo2,prop_class, c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 
