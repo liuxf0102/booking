@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var pool = require("../lib/mysql_pool");
 var m_weixinMsg = require("../lib/weixinMsg");
-var m_weixinMsg_update = require("../lib/weixinMsg");
 var m_userInfo = require("../lib/userInfo");
 var m_booking = require("../lib/booking");
 
@@ -150,9 +149,11 @@ router.post('/create', function (req, res, next) {
                     if("0"==status) {
                         m_userInfo.getUserInfo(userid1, function (userInfo) {
                             let msg = {};
+                            msg.bookingId=result.insertId;
                             msg.real_name = userInfo.real_name;
                             msg.status = "待审核";
                             msg.time_format = month + "月" + day + "号 " + hour + "点";
+                            msg.job_location=userInfo.job_location;
                             m_weixinMsg.sendMsg(userid2, msg, function () {
 
                             });
@@ -349,12 +350,14 @@ router.put('/update', function (req, res, next) {
                             let tmpUserid2=booking.userid2;
                             m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
                                 let msg = {};
+                                msg.bookingId=id;
                                 msg.real_name = tmpUserInfo.real_name;
                                 msg.status = "审核通过";
                                 msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
+                                msg.job_location=tmpUserInfo.job_location;
                                 log.debug("sendMsg:userid2"+tmpUserid2);
                                 try {
-                                    m_weixinMsg_update.sendMsg(tmpUserid2, msg, function () {
+                                    m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
 
                                     });
                                 }catch (e){
