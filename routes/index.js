@@ -15,6 +15,8 @@ router.use("/booking",booking);
 var rota = require('../api/rota');
 router.use("/rota",rota);
 
+var comment = require('../api/comment');
+router.use("/comment",comment);
 
 
 var weixin = require('../api/weixin');
