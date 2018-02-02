@@ -19,10 +19,14 @@ router.use("/rota",rota);
 
 var weixin = require('../api/weixin');
 router.use("/weixin",weixin);
-var weixinMsg = require('../api/weixinMsg');
-router.use("/weixinMsg",weixinMsg);
+
 
 var qrcode = require('../api/qrcode');
 router.use("/qrcode",qrcode);
+
+
+/*//////////////////////////////////////////////////////////*/
+var weixin_food = require('../api/weixin_food');
+router.use("/weixin_food",weixin_food);
 
 module.exports = router;
