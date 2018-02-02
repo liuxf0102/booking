@@ -1,5 +1,5 @@
 api/weixin.js
-api/weixin_food.js
+api/weixin*
 api/qrcode.js
 lib/access_token.js
 node_modules/*
