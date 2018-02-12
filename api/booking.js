@@ -132,7 +132,7 @@ router.post('/create', function (req, res, next) {
     var response = [];
 
     var sqlPrepare = ["insert into bk_booking (userid1,userid2,status,year,month,day,weekday,hour,minute,memo1,memo2,prop_class,c_time,m_time) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"];
-    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute, memo1, memo2,prop_class, c_time, c_time];
+    var paramValue = [userid1, userid2, status, year, month, day, weekday, hour, minute, memo1, memo2, prop_class, c_time, c_time];
 
     var sql = sqlPrepare.join(" ");
 
@@ -149,17 +149,35 @@ router.post('/create', function (req, res, next) {
                         'result': 'success',
                         'id': result.insertId
                     });
-                    //send msg
+
                     if ("0" == status) {
+                        //send msg to userid2
                         try {
                             m_userInfo.getUserInfo(userid1, function (userInfo) {
                                 let msg = {};
-                                msg.bookingId = result.insertId;
+                                msg.page = "page/booking/qrBookingDetails?bookingId=" + result.insertId;
                                 msg.real_name = userInfo.real_name;
                                 msg.status = "待审核";
                                 msg.time_format = month + "月" + day + "号 " + hour + "点";
                                 msg.job_location = userInfo.job_location;
                                 m_weixinMsg.sendMsg(userid2, msg, function () {
+
+                                });
+                            });
+                        } catch (e) {
+                            log.error("send message:" + e);
+                        }
+                        //send msg to userid1
+                        try {
+                            m_userInfo.getUserInfo(userid1, function (userInfo) {
+                                let msg = {};
+                                msg.page = "page/booking/bookingDetails?bookingId=" + result.insertId;
+                                msg.real_name = userInfo.real_name;
+                                msg.status = "待审核";
+                                msg.time_format = month + "月" + day + "号 " + hour + "点";
+                                //msg.job_location =
+                                msg.memo = memo2;
+                                m_weixinMsg.sendMsg(userid1, msg, function () {
 
                                 });
                             });
@@ -351,18 +369,31 @@ router.put('/update', function (req, res, next) {
                     // booking approved send msg to userid2
 
                     //send msg
-                    if ("1" == status) {
+                    if ("1" == status || "-1" == status || "3" == status || "4" == status) {
                         m_booking.getBooking(id, function (booking) {
                             let userid1 = booking.userid1;
                             let tmpUserid2 = booking.userid2;
+                            let status = "未知";
+                            if ("1" == status) {
+                                status = "审核通过";
+                            } else if ("-1" == status) {
+                                status = "取消预约";
+                            } else if ("3" == status) {
+                                status = "用户爽约";
+                            } else if ("4" == status) {
+                                status = "完成履约";
+                            } else {
+                                status = "未知";
+                            }
                             try {
                                 m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
                                     let msg = {};
-                                    msg.bookingId = id;
+                                    msg.page = "page/booking/qrBookingDetails?bookingId=" + id;
                                     msg.real_name = tmpUserInfo.real_name;
-                                    msg.status = "审核通过";
+                                    msg.status = status;
                                     msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
                                     msg.job_location = tmpUserInfo.job_location;
+
                                     log.debug("sendMsg:userid2" + tmpUserid2);
 
                                     m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
