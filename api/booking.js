@@ -373,7 +373,7 @@ router.put('/update', function (req, res, next) {
                         m_booking.getBooking(id, function (booking) {
                             let userid1 = booking.userid1;
                             let tmpUserid2 = booking.userid2;
-                            let status = "未知";
+
                             if ("1" == status) {
                                 status = "审核通过";
                             } else if ("-1" == status) {
