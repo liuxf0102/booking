@@ -339,10 +339,10 @@ router.put('/update', function (req, res, next) {
         paramValue.push(job_office);
     }
     ;
-    var goodat = req.body.goodat;
-    if (typeof goodat !== 'undefined' && goodat !== '') {
-        sqlPrepare.push(",goodat = ?");
-        paramValue.push(goodat);
+    var version = req.body.version;
+    if (typeof version !== 'undefined' && version !== '') {
+        sqlPrepare.push(",version = ?");
+        paramValue.push(version);
     }
     ;
 
