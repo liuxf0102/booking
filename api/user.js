@@ -20,6 +20,10 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
         unionid = "unionid";
         log.error("userid is unionid");
     }
+    let appid=req.body.appid;
+    if (typeof appid == 'undefined' || appid == '') {
+        appid=0;
+    }
     //var openid = req.params.openid;
     let c_time = new Date().getTime();
     log.debug("openid:" + openid);
@@ -30,9 +34,9 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
 
     pool.conn(function (conn) {
 
-        var selectSQL = "select * from bk_user where unionid = ?";
+        var selectSQL = "select * from bk_user where appid=? and  unionid = ?";
         log.debug(selectSQL);
-        conn.query(selectSQL, [unionid], function (err, result) {
+        conn.query(selectSQL, [appid,unionid], function (err, result) {
 
             if (!err) {
                 if (result.length === 1) {
@@ -50,14 +54,14 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (unionid,openid,nick_name,icon,gender,c_time,m_time) values(?,?,?,?,?,?,?)";
+                    var insertSQL = "insert into bk_user (appid,unionid,openid,nick_name,icon,gender,c_time,m_time) values(?,?,?,?,?,?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [unionid, openid, nick_name, icon, gender, c_time, c_time], function (err, result) {
+                    conn.query(insertSQL, [appid,unionid, openid, nick_name, icon, gender, c_time, c_time], function (err, result) {
 
                         if (!err) {
 
                             if (result.affectedRows !== 0) {
-                                conn.query(selectSQL, [unionid], function (err, result) {
+                                conn.query(selectSQL, [appid,unionid], function (err, result) {
 
                                     if (!err) {
                                         if (result.length === 1) {
