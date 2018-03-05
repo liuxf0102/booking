@@ -6,12 +6,18 @@ var log = require('log4js').getLogger("rota");
 log.level = "debug";
 
 router.post('/list', function (req, res, next) {
+    var appid = req.body.appid;
+
+    if (typeof appid == 'undefined' || appid == '') {
+
+        appid="0";
+    }
 
 
     var response = [];
     let c_time = new Date().getTime() - 180 * 24 * 3600 * 1000;
-    var sqlPrepare = ["select u.icon,u.real_name,u.nick_name,c.*  from bk_comment c,bk_user u where c.userid2=u.userid and status=1 and c.c_time >? "];
-    var paramValue = [c_time];
+    var sqlPrepare = ["select u.icon,u.real_name,u.nick_name,c.*  from bk_comment c,bk_user u where c.userid2=u.userid and status=1 and appid=? and c.c_time >? "];
+    var paramValue = [appid,c_time];
 
 
 
