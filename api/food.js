@@ -57,7 +57,7 @@ router.post('/listLatestFoodid', function (req, res, next) {
     var response = [];
     //let c_time = new Date().getTime() - 180 * 24 * 3600 * 1000;
     var sqlPrepare = ["select foodid from fd_track group by foodid  order by foodid desc limit 50;"];
-
+    var paramValue = [];
 
     var sql = sqlPrepare.join(" ");
     log.debug("sql:" + sql);
