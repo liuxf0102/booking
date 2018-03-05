@@ -50,6 +50,43 @@ router.post('/list', function (req, res, next) {
 
 
 });
+
+router.post('/listLatestFoodid', function (req, res, next) {
+
+
+    var response = [];
+    //let c_time = new Date().getTime() - 180 * 24 * 3600 * 1000;
+    var sqlPrepare = ["select foodid from fd_track group by foodid  order by foodid desc limit 50;"];
+
+
+    var sql = sqlPrepare.join(" ");
+    log.debug("sql:" + sql);
+    log.debug("param :" + paramValue.join(" "));
+
+    pool.conn(function (conn) {
+        conn.query(sql, paramValue, function (err, result) {
+            if (!err) {
+                var response = [];
+
+
+                response.push({
+                    'result': 'success',
+                    'data': result
+                });
+
+
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).send(JSON.stringify(response));
+            } else {
+                log.error("err:" + err);
+                res.status(400).send(err);
+            }
+
+        })
+    });
+
+
+});
 //modify user info
 router.post('/create', function (req, res, next) {
     log.debug("req.body" + JSON.stringify(req.body));
