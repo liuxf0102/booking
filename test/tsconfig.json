@@ -1,0 +1,135 @@
+{
+  "schemas": [
+    "urn:scim:api:messages:2.0:ListResponse"
+  ],
+  "totalResults": 15,
+  "Resources": [
+    {
+      "displayName": "Compute",
+      "isAliasApp": false,
+      "id": "4d88efb63bc5444da695a746466b8ca5",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "IDCS Application",
+      "isAliasApp": false,
+      "id": "IDCSAppId",
+      "basedOnTemplate": {
+        "value": "IDCSAppTemplateId"
+      }
+    },
+    {
+      "displayName": "Storage",
+      "isAliasApp": false,
+      "id": "295bf7f5d5d74c94a0a32ee4693ed769",
+      "certificates": [
+        {
+          "certAlias": "idcs-f24033becdde4c539db230b56631c792_StorageApp-8538b0ef81114d4283ee9496c2e9a35a"
+        }
+      ],
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "CustomSOA",
+      "isAliasApp": false,
+      "id": "d5911e2f33764a91a13887411cc80af9",
+      "basedOnTemplate": {
+        "value": "CustomWebAppTemplateId"
+      }
+    },
+    {
+      "displayName": "DBAASApp-44bf478941d1442b821c1c6eb4509b0b_DBAAS_APPID",
+      "isAliasApp": true,
+      "id": "928f4e4c18324483a89779f3e14091bf",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "DBBCSApp-5aa85f278ced49c984d2d1c6eb111bac_DatabaseBackup_idrouser",
+      "isAliasApp": true,
+      "id": "dfac7e4e9549490b80a1734d23eca316",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "osbtoken",
+      "isAliasApp": false,
+      "id": "26d5141f3e49438f9780d74db70c264d",
+      "basedOnTemplate": {
+        "value": "CustomWebAppTemplateId"
+      }
+    },
+    {
+      "displayName": "OAuth2Test",
+      "isAliasApp": false,
+      "id": "d0fd6516f4d4488985dc79b704a8f962",
+      "basedOnTemplate": {
+        "value": "CustomWebAppTemplateId"
+      }
+    },
+    {
+      "displayName": "ComputeApp-4374a21d4384484e94bebe6e034473d5_OCC_APPID",
+      "isAliasApp": true,
+      "id": "255f9080fc72414cb4d33b8b03b0cbfd",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "DBAAS",
+      "isAliasApp": false,
+      "id": "d34670b515cd48f291da91cac0bfa56a",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "JAAS",
+      "isAliasApp": false,
+      "id": "455cb3e61d5f454f8b8f9824f8163299",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "JAASApp-8ee50a274a25477ebd2af17a1e384943_JAAS_APPID",
+      "isAliasApp": true,
+      "id": "7f83049032064c9d899fed3bc3afb7d2",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "SOA",
+      "isAliasApp": false,
+      "id": "8e41d7dfd6394d43a469a19e918ceb48",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "SOAApp-d7ea4b85e00943b0b87a79f40b1f01ce_SOA_APPID",
+      "isAliasApp": true,
+      "id": "ed22bb6f7ae248c5a05d74e1ec43b011",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    },
+    {
+      "displayName": "DBBCS",
+      "isAliasApp": false,
+      "id": "86cdabe6c50447e8b9d4051bab1d5448",
+      "basedOnTemplate": {
+        "value": "OPCAppTemplateId"
+      }
+    }
+  ],
+  "startIndex": 1,
+  "itemsPerPage": 50
+}

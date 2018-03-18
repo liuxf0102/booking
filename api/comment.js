@@ -12,12 +12,16 @@ router.post('/list', function (req, res, next) {
 
         appid="0";
     }
+    var status = req.body.status;
+    if (typeof status == 'undefined' || status == '') {
 
+        status="1";
+    }
 
     var response = [];
     let c_time = new Date().getTime() - 180 * 24 * 3600 * 1000;
-    var sqlPrepare = ["select u.icon,u.real_name,u.nick_name,c.*  from bk_comment c,bk_user u where c.userid2=u.userid and status=1 and c.appid=? and c.c_time >? "];
-    var paramValue = [appid,c_time];
+    var sqlPrepare = ["select u.icon,u.real_name,u.nick_name,c.*  from bk_comment c,bk_user u where c.userid2=u.userid and status=? and c.appid=? and c.c_time >? "];
+    var paramValue = [status,appid,c_time];
 
 
 
