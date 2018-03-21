@@ -30,6 +30,9 @@ router.use("/qrcode",qrcode);
 /*//////////////////////////////////////////////////////////*/
 var weixin_food = require('../api/weixin_food');
 router.use("/weixin_food",weixin_food);
+var weixin_jifen = require('../api/weixin_jifen');
+router.use("/weixin_jifen",weixin_jifen);
+
 var food = require('../api/food');
 router.use("/food",food);
 /*//////////////////////////////////////////////////////////*/
