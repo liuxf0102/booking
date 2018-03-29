@@ -35,6 +35,10 @@ router.use("/weixin_jifen",weixin_jifen);
 
 var food = require('../api/food');
 router.use("/food",food);
+
+
+var jf_vendor = require('../api/jf_vendor');
+router.use("/jf_vendor",jf_vendor);
 /*//////////////////////////////////////////////////////////*/
 
 
