@@ -13,8 +13,8 @@ router.post('/list', function (req, res, next) {
         appid="0";
     }
     var status = req.body.status;
-    if (typeof status == 'undefined' || status == '') {
 
+    if (typeof status == 'undefined' || status === '') {
         status="1";
     }
 
