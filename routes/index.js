@@ -27,6 +27,7 @@ var qrcode = require('../api/qrcode');
 router.use("/qrcode",qrcode);
 
 
+
 /*//////////////////////////////////////////////////////////*/
 var weixin_food = require('../api/weixin_food');
 router.use("/weixin_food",weixin_food);
@@ -39,6 +40,12 @@ router.use("/food",food);
 
 var jf_vendor = require('../api/jf_vendor');
 router.use("/jf_vendor",jf_vendor);
+
+
+var proxy = require('../proxy/bcs');
+router.use("/proxy/bcs",proxy);
+
+
 /*//////////////////////////////////////////////////////////*/
 
 
