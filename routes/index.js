@@ -46,6 +46,9 @@ var proxy = require('../proxy/bcs');
 router.use("/proxy/bcs",proxy);
 
 
+var config = require('../api/config');
+router.use("/config",config);
+
 /*//////////////////////////////////////////////////////////*/
 
 
