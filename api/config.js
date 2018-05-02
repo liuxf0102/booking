@@ -8,7 +8,8 @@ log.level = "debug";
 router.get('/getConfig', function (req, res, next) {
     var response = [];
     let data={
-        class: ['语文', '数学', '英语', '美术', '体育']
+        class: ['语文', '数学', '英语', '美术', '体育'],
+        latestVersion:"2.7.7"
     }
     response.push({
         'result': 'success',
