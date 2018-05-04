@@ -2,6 +2,8 @@ api/weixin.js
 api/weixin*
 api/qrcode.js
 lib/access_token.js
+lib/access_token_1.js
+lib/mysql_pool.js
 node_modules/*
 *.dog
 log/*
