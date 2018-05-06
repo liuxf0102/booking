@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require("../lib/mysql_pool");
 var m_weixinMsg = require("../lib/weixinMsg");
+var m_weixinMsg1 = require("../lib/weixinMsg1");
 var m_userInfo = require("../lib/userInfo");
 var m_booking = require("../lib/booking");
 
@@ -160,7 +161,7 @@ router.post('/create', function (req, res, next) {
                                 msg.status = "待审核";
                                 msg.time_format = month + "月" + day + "号 " + hour + "点";
                                 msg.job_location = userInfo.job_location;
-                                m_weixinMsg.sendMsg(userid2, msg, function () {
+                                m_weixinMsg1.sendMsg1(userid2, msg, function () {
 
                                 });
                             });
@@ -396,7 +397,7 @@ router.put('/update', function (req, res, next) {
 
                                     log.debug("sendMsg:userid2" + tmpUserid2);
 
-                                    m_weixinMsg.sendMsg(tmpUserid2, msg, function () {
+                                    m_weixinMsg1.sendMsg1(tmpUserid2, msg, function () {
 
                                     });
 
