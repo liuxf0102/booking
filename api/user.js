@@ -115,14 +115,18 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
         mobile = "mobile";
         log.error("userid is mobile");
     }
+    let appid=req.body.appid;
+    if (typeof appid == 'undefined' || appid == '') {
+        appid=0;
+    }
     let c_time = new Date().getTime();
     log.debug("mobile:" + mobile);
     res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
 
-        var selectSQL = "select * from bk_user where mobile = ?";
+        var selectSQL = "select * from bk_user where appid=? and  mobile = ?";
         log.debug(selectSQL);
-        conn.query(selectSQL, [mobile], function (err, result) {
+        conn.query(selectSQL, [appid,mobile], function (err, result) {
 
             if (!err) {
                 if (result.length === 1) {
@@ -140,9 +144,9 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
                     });
                     res.status(200).send(JSON.stringify(response));
                 } else {
-                    var insertSQL = "insert into bk_user (mobile,nick_name,real_name,c_time,m_time) values(?,'','',?,?)";
+                    var insertSQL = "insert into bk_user (appid,mobile,nick_name,real_name,c_time,m_time) values(?,?,'','',?,?)";
                     log.debug(insertSQL);
-                    conn.query(insertSQL, [mobile, c_time, c_time], function (err, result) {
+                    conn.query(insertSQL, [appid,mobile, c_time, c_time], function (err, result) {
 
                         if (!err) {
 
@@ -200,13 +204,17 @@ router.post('/getUserInfoByMobile', function (req, res, next) {
         mobile = "mobile";
         log.error("userid is mobile");
     }
+    let appid=req.body.appid;
+    if (typeof appid == 'undefined' || appid == '') {
+        appid=0;
+    }
     log.debug("mobile:" + mobile);
     res.setHeader('Content-Type', 'application/json');
     pool.conn(function (conn) {
 
-        var selectSQL = "select * from bk_user where mobile = ?";
+        var selectSQL = "select * from bk_user where appid=? and mobile = ?";
         log.debug(selectSQL);
-        conn.query(selectSQL, [mobile], function (err, result) {
+        conn.query(selectSQL, [appid,mobile], function (err, result) {
 
             if (!err) {
                 if (result.length === 1) {
@@ -555,7 +563,10 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
         sqlPrepare.push(",gender = ?");
         paramValue.push(gender);
     }
-
+    let appid=req.body.appid;
+    if (typeof appid == 'undefined' || appid == '') {
+        appid=0;
+    }
 
     sqlPrepare.push("where userid=?");
     paramValue.push(userid);
@@ -565,7 +576,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
     log.debug("sql:" + sql);
     log.debug("param:" + paramValue);
 
-    let delSql = "delete  from bk_user where unionid=? and userid <> ?"
+    let delSql = "delete  from bk_user where appid=? and unionid=? and userid <> ?"
     pool.conn(function (conn) {
         conn.query(sql, paramValue, function (err, result) {
             if (!err) {
@@ -573,7 +584,7 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
 
                 if (result.affectedRows !== 0) {
 
-                    conn.query(delSql, [unionid, userid], function (err1, result) {
+                    conn.query(delSql, [appid,unionid, userid], function (err1, result) {
                         if (!err1) {
                             res.status(200).send(JSON.stringify(response));
                         } else {
