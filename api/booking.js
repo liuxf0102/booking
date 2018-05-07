@@ -410,6 +410,36 @@ router.put('/update', function (req, res, next) {
 
                     }
 
+                    //send msg memo2
+                    if (typeof memo2 !== 'undefined' && memo2 !== ''){
+                        m_booking.getBooking(id, function (booking) {
+                            let userid1 = booking.userid1;
+
+
+                               let status = "乙方留言";
+
+                            try {
+                                m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
+                                    let msg = {};
+                                    msg.page = "page/booking/bookingDetails?bookingId=" + id;
+                                    msg.real_name = tmpUserInfo.real_name;
+                                    msg.status = status;
+                                    msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
+                                    msg.memo = memo2;
+
+                                    log.debug("sendMsg:userid1" + userid1);
+
+                                    m_weixinMsg.sendMsg(userid1, msg, function () {
+
+                                    });
+
+                                });
+                            } catch (e) {
+                                log.error("update send message " + e);
+                            }
+                        })
+                    }
+
                 } else {
                     response.push({
                         'result': 'error',
