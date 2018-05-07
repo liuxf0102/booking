@@ -439,7 +439,36 @@ router.put('/update', function (req, res, next) {
                             }
                         })
                     }
+                    //send msg memo2_1
+                    if (typeof memo2_1 !== 'undefined' && memo2_1 !== ''){
+                        m_booking.getBooking(id, function (booking) {
+                            let userid1 = booking.userid1;
+                            let tmpUserid2 = booking.userid2;
 
+
+                            let status = "甲方留言回复";
+
+                            try {
+                                m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
+                                    let msg = {};
+                                    msg.page = "page/booking/bookingDetails?bookingId=" + id;
+                                    msg.real_name = tmpUserInfo.real_name;
+                                    msg.status = status;
+                                    msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
+                                    msg.memo = memo2_1;
+
+                                    log.debug("sendMsg:tmpUserid2" + tmpUserid2);
+
+                                    m_weixinMsg1.sendMsg1(tmpUserid2, msg, function () {
+
+                                    });
+
+                                });
+                            } catch (e) {
+                                log.error("update send message " + e);
+                            }
+                        })
+                    }
                 } else {
                     response.push({
                         'result': 'error',
