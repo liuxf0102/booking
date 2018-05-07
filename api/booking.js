@@ -451,7 +451,7 @@ router.put('/update', function (req, res, next) {
                             try {
                                 m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
                                     let msg = {};
-                                    msg.page = "page/booking/bookingDetails?bookingId=" + id;
+                                    msg.page = "page/booking/qrBookingDetails?bookingId=" + id;
                                     msg.real_name = tmpUserInfo.real_name;
                                     msg.status = status;
                                     msg.time_format = booking.month + "月" + booking.day + "号 " + booking.hour + "点";
