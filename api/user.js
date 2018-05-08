@@ -151,7 +151,7 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
                         if (!err) {
 
                             if (result.affectedRows !== 0) {
-                                conn.query(selectSQL, [mobile], function (err, result) {
+                                conn.query(selectSQL, [appid,mobile], function (err, result) {
 
                                     if (!err) {
                                         if (result.length === 1) {
@@ -163,6 +163,8 @@ router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
                                             });
                                             res.status(200).send(JSON.stringify(response));
                                         }
+                                    }else{
+                                        log.error("select uesr:" + err);
                                     }
                                 });
 
