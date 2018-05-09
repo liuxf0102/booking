@@ -539,6 +539,7 @@ router.put('/appendFormids', function (req, res, next) {
     userInfo.getUserInfo(userid, function (userInfo) {
 
         let strFormidsOld = userInfo.formids;
+        log.debug("strFormidsOld:" + strFormidsOld);
         let formidsOld = [];
         if (strFormidsOld == "") {
             formidsOld = [];
