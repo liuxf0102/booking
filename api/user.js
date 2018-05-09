@@ -107,6 +107,106 @@ router.post('/getOrCreateUserInfoByUnionid', function (req, res, next) {
 
 
 });
+router.post('/getOrCreateUserInfoByOpenid', function (req, res, next) {
+    var response = [];
+    var openid = req.body.openid;
+
+    var nick_name = req.body.nick_name;
+    var icon = req.body.icon;
+    var gender = req.body.gender;
+
+
+    if (typeof openid == 'undefined' || openid == '') {
+        openid = "openid";
+        log.error("userid is openid");
+    }
+    let appid=req.body.appid;
+    if (typeof appid == 'undefined' || appid == '') {
+        appid=0;
+    }
+    //var openid = req.params.openid;
+    let c_time = new Date().getTime();
+    log.debug("openid:" + openid);
+
+    log.debug("nick_name:" + nick_name);
+
+    res.setHeader('Content-Type', 'application/json');
+
+    pool.conn(function (conn) {
+
+        var selectSQL = "select * from bk_user where appid=? and  openid = ?";
+        log.debug(selectSQL);
+        conn.query(selectSQL, [appid,openid], function (err, result) {
+
+            if (!err) {
+                if (result.length === 1) {
+                    log.debug("result:" + result[0].openid);
+                    //set userid
+                    response.push({
+                        'result': 'success',
+                        'myInfo': result[0]
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else if (result.length > 1) {
+                    log.error("userid error openid:" + openid);
+                    response.push({
+                        'msg': 'get userid error: ' + openid + ",result length:" + result.length
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                } else {
+                    var insertSQL = "insert into bk_user (appid,openid,nick_name,icon,gender,c_time,m_time) values(?,?,?,?,?,?,?)";
+                    log.debug(insertSQL);
+                    conn.query(insertSQL, [appid, openid, nick_name, icon, gender, c_time, c_time], function (err, result) {
+
+                        if (!err) {
+
+                            if (result.affectedRows !== 0) {
+                                conn.query(selectSQL, [appid,openid], function (err, result) {
+
+                                    if (!err) {
+                                        if (result.length === 1) {
+                                            log.debug("result:" + result[0].userid);
+                                            //set userid
+                                            response.push({
+                                                'result': 'success',
+                                                'myInfo': result[0]
+                                            });
+                                            res.status(200).send(JSON.stringify(response));
+                                        }
+                                    }
+                                });
+
+                            } else {
+                                response.push({
+                                    'msg': 'create userid error.'
+                                });
+                                res.status(200).send(JSON.stringify(response));
+                            }
+
+
+                        } else {
+                            log.error("insertSQL:"+err);
+                            res.status(400).send(err);
+                        }
+
+                    })
+
+
+                }
+
+
+            } else {
+                log.error(err);
+                res.status(400).send(err);
+            }
+
+        });
+
+
+    });
+
+
+});
 // getOrCreateUserInfoByMobile
 router.post('/getOrCreateUserInfoByMobile', function (req, res, next) {
     var response = [];
@@ -591,6 +691,95 @@ router.put('/mergeUnionid2mobileid', function (req, res, next) {
                             res.status(200).send(JSON.stringify(response));
                         } else {
                             log.error("delete user error unionid:" + unionid + ":" + err1);
+                        }
+                    });
+
+                } else {
+                    log.error("update user error userid:" + userid + ":" + err);
+                    response.push({
+                        'msg': 'update user error userid:' + userid
+                    });
+                    res.status(200).send(JSON.stringify(response));
+                }
+
+
+            } else {
+                log.error(err);
+                res.status(400).send(err);
+            }
+
+        })
+    });
+
+
+});
+router.put('/mergeOpenid2mobileid', function (req, res, next) {
+    var userid = req.body.userid;
+    if (typeof userid == 'undefined' || userid == '') {
+        userid = "userid";
+        log.error("userid is error");
+    }
+    let m_time = new Date().getTime();
+    var response = [];
+    res.setHeader('Content-Type', 'application/json');
+    var sqlPrepare = ["update bk_user set m_time=?,userid = ? "];
+    var paramValue = [m_time, userid];
+
+
+    var unionid = req.body.unionid;
+    if (typeof unionid !== 'undefined' && unionid !== '') {
+        sqlPrepare.push(",unionid = ?");
+        paramValue.push(unionid);
+    }
+
+    var openid = req.body.openid;
+    if (typeof openid !== 'undefined' && openid !== '') {
+        sqlPrepare.push(",openid = ?");
+        paramValue.push(openid);
+    }
+    var nick_name = req.body.nick_name;
+    if (typeof nick_name !== 'undefined' && nick_name !== '') {
+        sqlPrepare.push(",nick_name = ?");
+        paramValue.push(nick_name);
+    }
+
+    var icon = req.body.icon;
+    if (typeof icon !== 'undefined' && icon !== '') {
+        sqlPrepare.push(",icon = ?");
+        paramValue.push(icon);
+    }
+
+    var gender = req.body.gender;
+    if (typeof gender !== 'undefined' && gender !== '') {
+        sqlPrepare.push(",gender = ?");
+        paramValue.push(gender);
+    }
+    let appid=req.body.appid;
+    if (typeof appid == 'undefined' || appid == '') {
+        appid=0;
+    }
+
+    sqlPrepare.push("where userid=?");
+    paramValue.push(userid);
+
+    var sql = sqlPrepare.join(" ");
+
+    log.debug("sql:" + sql);
+    log.debug("param:" + paramValue);
+
+    let delSql = "delete  from bk_user where appid=? and openid=? and userid <> ?"
+    pool.conn(function (conn) {
+        conn.query(sql, paramValue, function (err, result) {
+            if (!err) {
+                var response = [];
+
+                if (result.affectedRows !== 0) {
+
+                    conn.query(delSql, [appid,openid, userid], function (err1, result) {
+                        if (!err1) {
+                            res.status(200).send(JSON.stringify(response));
+                        } else {
+                            log.error("delete user error openid:" + openid + ":" + err1);
                         }
                     });
 
