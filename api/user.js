@@ -527,6 +527,7 @@ router.put('/appendFormids', function (req, res, next) {
     if (typeof userid == 'undefined' || userid == '') {
         userid = "userid";
         log.error("userid is error");
+        return;
     }
     let strFormidsNew = req.body.formids;
     log.debug("strFormidsNew:" + strFormidsNew);
