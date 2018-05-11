@@ -8,14 +8,15 @@ log.level = "debug";
 router.get('/getConfig', function (req, res, next) {
     var response = [];
     let data={
-        class: ['语文', '数学', '英语', '美术', '体育'],
-        latestVersion:"2.7.7"
+        class: ['语文', '数学', '英语', '美术', '体育']
+      
     }
     response.push({
         'result': 'success',
         'data': data
     });
-
+    log.debug("getConfig:"+JSON.stringify(response));
+    console.log("getConfig:"+JSON.stringify(response));
     res.setHeader('Content-Type', 'application/json');
     res.status(200).send(JSON.stringify(response));
 });
