@@ -17,7 +17,7 @@ router.get('/getLedgerInfo', function (req, res, next) {
 
     let options = {
         method: 'get',
-        url: "http://129.157.179.22:3011/api/v1/channels/appdev1orderer/summary?peerAddr=peer0.appdev1.oracle.com&peerPort=7051&filterby=all",
+        url: "http://129.156.117.35:3011/api/v1/channels/borderer/summary?peerAddr=peer0.b.com&peerPort=7051&filterby=all",
         json: true,
         headers: {
             "content-type": "application/json",
@@ -44,7 +44,7 @@ router.get('/getLedgerInfo', function (req, res, next) {
 router.get('/getServerInfo', function (req, res, next) {
     var response = [];
     let data={
-        "BCS_URL": "http://129.157.179.22:3019",
+        "BCS_URL": "http://129.156.117.35:3019",
         "BCS_CHANNEL": "appdev1orderer",
         "BCS_VERSION":"medicine",
         "BCS_CHAINCODE":"v1"
