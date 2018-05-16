@@ -45,6 +45,7 @@ router.get('/getServerInfo', function (req, res, next) {
     var response = [];
     let data={
         "BCS_URL": "http://129.156.117.35:3019",
+        "BCS_CONTROL": "http://129.156.117.35:3011",
         "BCS_CHANNEL": "appdev1orderer",
         "BCS_VERSION":"medicine",
         "BCS_CHAINCODE":"v1"
