@@ -640,17 +640,15 @@ router.put('/mergeOpenid2mobileid', function (req, res, next) {
     var paramValue = [m_time, userid];
 
 
-    var unionid = req.body.unionid;
-    if (typeof unionid !== 'undefined' && unionid !== '') {
-        sqlPrepare.push(",unionid = ?");
-        paramValue.push(unionid);
-    }
-
     var openid = req.body.openid;
-    if (typeof openid !== 'undefined' && openid !== '') {
+
+    if (typeof openid == 'undefined' || openid == '') {
+        openid = "openid";
+        log.error("openid is error");
         sqlPrepare.push(",openid = ?");
         paramValue.push(openid);
     }
+
     var nick_name = req.body.nick_name;
     if (typeof nick_name !== 'undefined' && nick_name !== '') {
         sqlPrepare.push(",nick_name = ?");
