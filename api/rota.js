@@ -21,7 +21,7 @@ router.post('/list', function (req, res, next) {
     }
     var day = req.body.day;
     if (typeof day !== 'undefined' && day !== '') {
-        sqlPrepare.push(",day = ?");
+        sqlPrepare.push("and day = ?");
         paramValue.push(day);
     }
 
