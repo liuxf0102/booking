@@ -19,6 +19,11 @@ router.post('/list', function (req, res, next) {
     } else {
         paramValue.push('userid');
     }
+    var day = req.body.day;
+    if (typeof day !== 'undefined' && day !== '') {
+        sqlPrepare.push(",day = ?");
+        paramValue.push(day);
+    }
 
 
     var sql = sqlPrepare.join(" ");
