@@ -270,7 +270,7 @@ router.put('/updateOrCreate', function (req, res, next) {
                 } else {
 
                     let c_time = new Date().getTime();
-                    let sqlCreatePrepare = ["insert into bk_rota (userid,day,flag,memo,c_time,m_time) values (?,?,?,?,?)"];
+                    let sqlCreatePrepare = ["insert into bk_rota (userid,day,flag,memo,c_time,m_time) values (?,?,?,?,?,?)"];
                     var paramCreateValue = [userid, day, flag,memo, c_time, c_time];
 
                     var sqlCreate = sqlCreatePrepare.join(" ");
