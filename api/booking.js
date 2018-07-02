@@ -151,7 +151,7 @@ router.post('/create', function (req, res, next) {
                         'id': result.insertId
                     });
 
-                    if ("0" == status) {
+                    if ("0" == status||"1" == status) {
                         //send msg to userid2
                         try {
                             m_userInfo.getUserInfo(userid1, function (userInfo) {
@@ -159,6 +159,9 @@ router.post('/create', function (req, res, next) {
                                 msg.page = "page/booking/qrBookingDetails?bookingId=" + result.insertId;
                                 msg.real_name = userInfo.real_name;
                                 msg.status = "待审核";
+                                if("1" == status){
+                                    msg.status = "审核通过";
+                                }
                                 msg.time_format = month + "月" + day + "号 " + hour + "点";
                                 msg.job_location = userInfo.job_location;
                                 m_weixinMsg1.sendMsg1(userid2, msg, function () {
@@ -175,6 +178,9 @@ router.post('/create', function (req, res, next) {
                                 msg.page = "page/booking/bookingDetails?bookingId=" + result.insertId;
                                 msg.real_name = userInfo.real_name;
                                 msg.status = "待审核";
+                                if("1" == status){
+                                    msg.status = "审核通过";
+                                }
                                 msg.time_format = month + "月" + day + "号 " + hour + "点";
                                 //msg.job_location =
                                 msg.memo = memo2;
@@ -416,7 +422,7 @@ router.put('/update', function (req, res, next) {
                             let userid1 = booking.userid1;
 
 
-                               let status = "乙方留言";
+                            let status = "乙方留言";
 
                             try {
                                 m_userInfo.getUserInfo(userid1, function (tmpUserInfo) {
